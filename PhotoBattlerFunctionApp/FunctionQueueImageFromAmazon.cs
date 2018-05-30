@@ -30,13 +30,15 @@ namespace PhotoBattlerFunctionApp
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "createimage/amazon")]HttpRequestMessage req,
             [Queue("create-image-from-urls")]ICollector<CreateImageFromUrlsRequest> queueItems,
             [Table("CreateImageFromUrls")]ICollector<CreateImageFromUrlsEntity> outTable,
+            [Table("Items")]ICollector<Item> outItemTable,
             TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
             dynamic data = await req.Content.ReadAsAsync<object>();
             string asin = data.asin;
+            string name = data.name;
             ICollection<string> tags = data.tags.ToObject<List<string>>();
-            log.Info($"asin={asin}, tags={string.Join(",", tags)}");
+            log.Info($"asin={asin}, name={name}, tags={string.Join(",", tags)}");
 
             var AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("PAAPI_ACCESS_KEY_ID");
             var AWS_SECRET_KEY = Environment.GetEnvironmentVariable("PAAPI_SECRET_KEY");
@@ -78,6 +80,21 @@ namespace PhotoBattlerFunctionApp
                     log.Warning(ex.Message);
                 }
             });
+            try
+            {
+                outItemTable.Add(new Item()
+                {
+                    PartitionKey = "Amazon",
+                    RowKey = asin,
+                    Name = name,
+                    Tags = tags
+                });
+            }
+            catch (Exception ex)
+            {
+                // Table へのエラー（特にキー重複）は無視する
+                log.Warning(ex.Message);
+            }
             return req.CreateResponse(HttpStatusCode.OK);
         }
 

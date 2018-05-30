@@ -13,4 +13,9 @@ namespace PhotoBattlerFunctionApp.Models
         public string Url { get; set; }
         public ICollection<string> Tags { get; set; }
     }
+    public class Item : TableEntity
+    {
+        public string Name { get; set; }
+        public ICollection<string> Tags { get; set; }
+    }
 }
