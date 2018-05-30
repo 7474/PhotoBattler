@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace PhotoBattlerFunctionApp
 {
-    public static class CreateImageFromUrls
+    public static class FunctionCreateImageFromUrls
     {
         /// <summary>
         /// 画像URL指定でのタグ付けのリクエストを処理する。
