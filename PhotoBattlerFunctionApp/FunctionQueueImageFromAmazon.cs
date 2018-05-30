@@ -25,11 +25,13 @@ namespace PhotoBattlerFunctionApp
         private const string DESTINATION = "ecs.amazonaws.jp";
         private const string NAMESPACE = "http://webservices.amazon.com/AWSECommerceService/2011-08-01";
 
-        [FunctionName("FunctionQueueImageFromAmazon")]
+        [FunctionName("QueueImageFromAmazon")]
         public static async Task<HttpResponseMessage> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "createimage/amazon")]HttpRequestMessage req,
+            [Table("CreateImageFromUrls")] IQueryable<CreateImageFromUrlsEntity> imageUrls,
+            [Table("Items")] IQueryable<Item> items,
             [Queue("create-image-from-urls")]ICollector<CreateImageFromUrlsRequest> queueItems,
-            [Table("CreateImageFromUrls")]ICollector<CreateImageFromUrlsEntity> outTable,
+            [Table("CreateImageFromUrls")]ICollector<CreateImageFromUrlsEntity> outImageUrlTable,
             [Table("Items")]ICollector<Item> outItemTable,
             TraceWriter log)
         {
@@ -64,23 +66,25 @@ namespace PhotoBattlerFunctionApp
                     Url = x,
                     Tags = tags
                 });
-                try
+                var rowKey = asin + MD5Hash(x);
+                // XXX Existチェックしたいだけなのだが
+                if (imageUrls.Where(y => y.PartitionKey == "Amazon" && y.RowKey == rowKey).ToList().Count() == 0)
                 {
-                    outTable.Add(new CreateImageFromUrlsEntity()
+                    outImageUrlTable.Add(new CreateImageFromUrlsEntity()
                     {
                         PartitionKey = "Amazon",
-                        RowKey = asin + MD5Hash(x),
+                        RowKey = rowKey,
                         Url = x,
                         Tags = tags
                     });
+                    log.Info($"{rowKey} entry to CreateImageFromUrls.");
                 }
-                catch (Exception ex)
+                else
                 {
-                    // Table へのエラー（特にキー重複）は無視する
-                    log.Warning(ex.Message);
+                    log.Info($"{rowKey} is exist.");
                 }
             });
-            try
+            if (items.Where(y => y.PartitionKey == "Amazon" && y.RowKey == asin).ToList().Count() == 0)
             {
                 outItemTable.Add(new Item()
                 {
@@ -89,11 +93,11 @@ namespace PhotoBattlerFunctionApp
                     Name = name,
                     Tags = tags
                 });
+                log.Info($"{asin} entry to Items.");
             }
-            catch (Exception ex)
+            else
             {
-                // Table へのエラー（特にキー重複）は無視する
-                log.Warning(ex.Message);
+                log.Info($"{asin} is exist.");
             }
             return req.CreateResponse(HttpStatusCode.OK);
         }
