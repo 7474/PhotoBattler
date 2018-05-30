@@ -36,6 +36,7 @@ namespace PhotoBattlerFunctionApp
             dynamic data = await req.Content.ReadAsAsync<object>();
             string asin = data.asin;
             ICollection<string> tags = data.tags.ToObject<List<string>>();
+            log.Info($"asin={asin}, tags={string.Join(",", tags)}");
 
             var AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("PAAPI_ACCESS_KEY_ID");
             var AWS_SECRET_KEY = Environment.GetEnvironmentVariable("PAAPI_SECRET_KEY");
@@ -58,7 +59,7 @@ namespace PhotoBattlerFunctionApp
             {
                 queueItems.Add(new CreateImageFromUrlsRequest()
                 {
-                    Url  = x,
+                    Url = x,
                     Tags = tags
                 });
                 try
