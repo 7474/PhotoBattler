@@ -25,19 +25,12 @@ namespace PhotoBattlerFunctionApp
                 name = principal.Identity.Name
             };
 
-            return principal.Identity.IsAuthenticated
-                ? req.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(
-                    new
-                    {
-                        message = "Authenticated.",
-                        identity = user
-                    }))
-                : req.CreateResponse(HttpStatusCode.BadRequest, JsonConvert.SerializeObject(
-                    new
-                    {
-                        message = "Need authentication.",
-                        identity = user
-                    }));
+            return req.CreateResponse(HttpStatusCode.OK, JsonConvert.SerializeObject(
+                new
+                {
+                    isAuthenticated = principal.Identity.IsAuthenticated,
+                    identity = user
+                }));
         }
     }
 }
