@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoBattlerFunctionApp", "PhotoBattlerFunctionApp\PhotoBattlerFunctionApp.csproj", "{1B1200F1-679B-405A-9F86-4BC555A8F6E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoBattlerSite", "PhotoBattlerSite\PhotoBattlerSite.csproj", "{D198C60B-8D55-4206-A2CA-F3B08FD7A2FA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoBattlerSite", "PhotoBattlerSite\PhotoBattlerSite.csproj", "{D198C60B-8D55-4206-A2CA-F3B08FD7A2FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
