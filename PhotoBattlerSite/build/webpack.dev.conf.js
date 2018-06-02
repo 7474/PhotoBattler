@@ -53,8 +53,9 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
+      favicon: 'src/favicon.ico',
       filename: 'index.html',
-      template: 'index.html',
+      template: 'src/index.html',
       inject: true
     }),
     // copy custom static assets
