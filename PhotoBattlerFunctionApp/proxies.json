@@ -4,14 +4,14 @@
     "staticIndex": {
       "matchCondition": {
         "methods": [ "GET" ],
-        "route": "/site/"
+        "route": "%STATIC_SITE_ROUTE%"
       },
       "backendUri": "%STATIC_SITE_PATH%/index.html"
     },
     "staticSite": {
       "matchCondition": {
         "methods": [ "GET" ],
-        "route": "/site/{*restOfPath}"
+        "route": "%STATIC_SITE_ROUTE%{*restOfPath}"
       },
       "backendUri": "%STATIC_SITE_PATH%/{restOfPath}"
     }
