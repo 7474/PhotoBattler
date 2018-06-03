@@ -36,70 +36,83 @@ namespace PhotoBattlerFunctionApp
             TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
-            dynamic data = await req.Content.ReadAsAsync<object>();
-            string asin = data.asin;
-            string name = data.name;
-            ICollection<string> tags = data.tags.ToObject<List<string>>();
-            log.Info($"asin={asin}, name={name}, tags={string.Join(",", tags)}");
+            var imageCount = 0;
 
-            var AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("PAAPI_ACCESS_KEY_ID");
-            var AWS_SECRET_KEY = Environment.GetEnvironmentVariable("PAAPI_SECRET_KEY");
-            var PAAPI_ASSOCIATE_TAG = Environment.GetEnvironmentVariable("PAAPI_ASSOCIATE_TAG");
-
-            var helper = new SignedRequestHelper(AWS_ACCESS_KEY_ID, AWS_SECRET_KEY, DESTINATION, PAAPI_ASSOCIATE_TAG);
-
-            IDictionary<string, string> r1 = new Dictionary<string, string>();
-            r1["Service"] = "AWSECommerceService";
-            //r1["Version"] = "2011-08-01";
-            r1["Operation"] = "ItemLookup";
-            r1["ItemId"] = asin;
-            r1["ResponseGroup"] = "Images";
-
-            var requestUrl = helper.Sign(r1);
-            log.Verbose($"requestUrl: {requestUrl}");
-
-            var images = Fetch(requestUrl);
-            images.ToList().ForEach((x) =>
+            try
             {
-                queueItems.Add(new CreateImageFromUrlsRequest()
+                dynamic data = await req.Content.ReadAsAsync<object>();
+                string asin = data.asin;
+                string name = data.name;
+                ICollection<string> tags = data.tags.ToObject<List<string>>();
+                log.Info($"asin={asin}, name={name}, tags={string.Join(",", tags)}");
+
+                var AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("PAAPI_ACCESS_KEY_ID");
+                var AWS_SECRET_KEY = Environment.GetEnvironmentVariable("PAAPI_SECRET_KEY");
+                var PAAPI_ASSOCIATE_TAG = Environment.GetEnvironmentVariable("PAAPI_ASSOCIATE_TAG");
+
+                var helper = new SignedRequestHelper(AWS_ACCESS_KEY_ID, AWS_SECRET_KEY, DESTINATION, PAAPI_ASSOCIATE_TAG);
+
+                IDictionary<string, string> r1 = new Dictionary<string, string>();
+                r1["Service"] = "AWSECommerceService";
+                //r1["Version"] = "2011-08-01";
+                r1["Operation"] = "ItemLookup";
+                r1["ItemId"] = asin;
+                r1["ResponseGroup"] = "Images";
+
+                var requestUrl = helper.Sign(r1);
+                log.Verbose($"requestUrl: {requestUrl}");
+
+                var images = Fetch(requestUrl);
+                images.ToList().ForEach((x) =>
                 {
-                    Url = x,
-                    Tags = tags
-                });
-                var rowKey = asin + MD5Hash(x);
-                // XXX Existチェックしたいだけなのだが
-                if (imageUrls.Where(y => y.PartitionKey == "Amazon" && y.RowKey == rowKey).ToList().Count() == 0)
-                {
-                    outImageUrlTable.Add(new CreateImageFromUrlsEntity()
+                    imageCount++;
+                    queueItems.Add(new CreateImageFromUrlsRequest()
                     {
-                        PartitionKey = "Amazon",
-                        RowKey = rowKey,
                         Url = x,
                         Tags = tags
                     });
-                    log.Info($"{rowKey} entry to CreateImageFromUrls.");
+                    var rowKey = asin + MD5Hash(x);
+                    // XXX Existチェックしたいだけなのだが
+                    if (imageUrls.Where(y => y.PartitionKey == "Amazon" && y.RowKey == rowKey).ToList().Count() == 0)
+                    {
+                        outImageUrlTable.Add(new CreateImageFromUrlsEntity()
+                        {
+                            PartitionKey = "Amazon",
+                            RowKey = rowKey,
+                            Url = x,
+                            Tags = tags
+                        });
+                        log.Info($"{rowKey} entry to CreateImageFromUrls.");
+                    }
+                    else
+                    {
+                        log.Info($"{rowKey} is exist.");
+                    }
+                });
+                if (items.Where(y => y.PartitionKey == "Amazon" && y.RowKey == asin).ToList().Count() == 0)
+                {
+                    outItemTable.Add(new Item()
+                    {
+                        PartitionKey = "Amazon",
+                        RowKey = asin,
+                        Name = name,
+                        Tags = tags
+                    });
+                    log.Info($"{asin} entry to Items.");
                 }
                 else
                 {
-                    log.Info($"{rowKey} is exist.");
+                    log.Info($"{asin} is exist.");
                 }
+            }
+            catch (Amazon503Exception ex)
+            {
+                return req.CreateErrorResponse(HttpStatusCode.ServiceUnavailable, ex);
+            }
+            return req.CreateResponse(HttpStatusCode.OK, new
+            {
+                imageCount = imageCount
             });
-            if (items.Where(y => y.PartitionKey == "Amazon" && y.RowKey == asin).ToList().Count() == 0)
-            {
-                outItemTable.Add(new Item()
-                {
-                    PartitionKey = "Amazon",
-                    RowKey = asin,
-                    Name = name,
-                    Tags = tags
-                });
-                log.Info($"{asin} entry to Items.");
-            }
-            else
-            {
-                log.Info($"{asin} is exist.");
-            }
-            return req.CreateResponse(HttpStatusCode.OK);
         }
 
         private static IEnumerable<string> Fetch(string url)
@@ -108,6 +121,10 @@ namespace PhotoBattlerFunctionApp
             {
                 WebRequest request = HttpWebRequest.Create(url);
                 WebResponse response = request.GetResponse();
+                if ((response as HttpWebResponse)?.StatusCode == HttpStatusCode.ServiceUnavailable)
+                {
+                    throw new Amazon503Exception();
+                }
                 XmlDocument doc = new XmlDocument();
                 doc.Load(response.GetResponseStream());
 
@@ -143,6 +160,10 @@ namespace PhotoBattlerFunctionApp
                 var strResult = BitConverter.ToString(result);
                 return strResult.Replace("-", "");
             }
+        }
+
+        class Amazon503Exception : ApplicationException
+        {
         }
     }
 }
