@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
+import SiteInfo from '@/components/SiteInfo'
 import Upload from '@/components/Upload'
 import Display from '@/components/Display'
 
@@ -12,6 +13,11 @@ export default new Router({
       path: '/',
       name: 'HelloWorld',
       component: HelloWorld
+    },
+    {
+      path: '/siteinfo',
+      name: 'SiteInfo',
+      component: SiteInfo
     },
     {
       path: '/upload',

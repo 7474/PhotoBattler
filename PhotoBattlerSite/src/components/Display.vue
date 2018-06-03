@@ -1,11 +1,11 @@
 <template>
   <div class="images-display">
     <div class="image-container">
-      <img class="image-main" :src="url" />
+      <img v-show="name" class="image-main model-photo" :src="url" />
     </div>
     <ul class="image-attributes">
-      <li v-for="tag in info.Predictions" v-bind:key="tag.TagId">
-        <span class="attribute-name">{{ tag.TagName }}</span><span class="attribute-value">{{ tag.Probability }}</span><span class="attribute-unit">%</span>
+      <li v-for="tag in info.predictions" v-bind:key="tag.tagId">
+        <span class="attribute-name">{{ tag.tagName }}</span><span class="attribute-value">{{ tag.probability }}</span><span class="attribute-unit">%</span>
       </li>
     </ul>
   </div>

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header id="header">
-      <img class="icon" src="./assets/logo.png">
+      <router-link to="/"><img class="icon" src="./assets/logo.png"></router-link>
       <app-menu class="menu"></app-menu>
       <user class="user"></user>
     </header>
@@ -9,7 +9,8 @@
       <router-view />
     </div>
     <footer id="footer">
-      © 2018 @koudenpa
+      <p><router-link to="/siteinfo">Caution</router-link></p>
+      <p>© 2018 <a href="https://twitter.com/koudenpa">@koudenpa</a></p>
     </footer>
   </div>
 </template>
@@ -27,6 +28,7 @@ export default {
 </script>
 
 <style>
+  @import url(http://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
   /* これSASSにまとめるのとどっちがいいねん。変数とかで色を管理したいよ。 */
   #app {
     position: relative;
@@ -35,39 +37,87 @@ export default {
 
     /* https://www.colordic.org/ */
     /*background-color: #236641;*/
-    background-color: #113320;
-    color: #00ff73;
+    background-color: #081810;
+    font-family: 'Noto Sans Japanese', sans-serif;
+    font-weight: 100;
+    color: #f0fff8;
     text-shadow:
-      #00ff73 0 0 1px;
+      #00ff00 0 0 1px,
+      #00a000 0 0 2px;
     min-height: 100%;
   }
   #app a {
     color: #80ffc0;
   }
+  #app .contents {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0.5em 0;
+  }
   #header {
-    margin:   0;
-    padding: 0.1em;
-    height: 2em;
+    margin: 0;
+    padding: 0;
+    height: 3em;
     display: flex;
-    background-color: #081810;
+    background-color: #043927;
   }
   #header .icon {
-    height: 1.8em;
-    width: 1.8em;
+    height: 100%;
     flex: none;
   }
   #header .menu {
+    padding: 0.4em;
     flex: auto;
   }
   #header .user {
+    padding: 0.4em 0.8em;
     flex: initial;
   }
   #contents {
     margin: 0;
     padding: 0;
+    min-height: 480px;
   }
   #footer {
     margin: 0;
     padding: 0;
+    text-align: center;
+    background-color: #043927;
   }
+  .model-photo {
+    border-radius: 10px;
+    border: 1px solid #f0fff8;
+    box-shadow: 0 0 10px #00ff00;
+  }
+  button, #app .menu a {
+    background-color: transparent;
+    border: 1px solid #f0fff8;
+    box-shadow: 0 0 10px #00ff00;
+    color: #f0fff8;
+    text-shadow:
+      #00ff00 0 0 1px,
+      #00a000 0 0 2px;
+    text-decoration-line: none;
+    font-weight: 100;
+    font-size: 1em;
+    padding: 0.2em;
+  }
+  input, select, textarea {
+    background-color: #043927;
+    border: 1px solid #f0fff8;
+    box-shadow: 0 0 10px #00ff00;
+    color: #f0fff8;
+    text-shadow:
+      #00ff00 0 0 1px,
+      #00a000 0 0 2px;
+    outline: 0;
+  }
+  *:focus {
+    outline: solid 1px #f0fff8;
+    box-shadow: 0 0 20px #80ff80;
+  }
+  input:focus, select:focus, textarea:focus {
+    box-shadow: 0 0 20px #80ff80;
+  }
+
 </style>
