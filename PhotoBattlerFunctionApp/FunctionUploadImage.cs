@@ -99,15 +99,18 @@ namespace PhotoBattlerFunctionApp
             var url = blockBlob.Uri.ToString();
             var source = "Upload";
             var key = blockBlob.Name;
+            log.Info($"pre upload. blobUri={url}");
 
             // upload image
             await blockBlob.UploadFromByteArrayAsync(image, 0, image.Length);
+            log.Info($"after upload.");
 
             // queue image
             TrainingImageLogic.AddImage(
                 imageUrls, queueItems, outImageUrlTable, log,
                 source, url, key, tags, user
                 );
+            log.Info($"after queue image data.");
 
             // predict image
             // XXX こっちもキューにした方がいいんちゃうか
@@ -118,6 +121,7 @@ namespace PhotoBattlerFunctionApp
             };
             // XXX Storage emurator で通すならNgrock等の工夫が必要。単にDevelop用のStorage Accountを取ってしまった方が楽かも。
             var predictResult = await predictionEndpoint.PredictImageUrlAsync(projectId, imageUrl);
+            log.Info($"after prediction.");
             var predicted = new PredictedInfo()
             {
                 PartitionKey = source,
