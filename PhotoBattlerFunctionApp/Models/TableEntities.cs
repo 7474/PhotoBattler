@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.WindowsAzure.Storage.Table;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +49,17 @@ namespace PhotoBattlerFunctionApp.Models
     public class PredictedInfo : TableEntity
     {
         public ImagePrediction Result { get; set; }
+        public string ResultJson
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(this.Result);
+            }
+            set
+            {
+                this.Result = JsonConvert.DeserializeObject<ImagePrediction>(value);
+            }
+        }
     }
     //
     public interface IUser

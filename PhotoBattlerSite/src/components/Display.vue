@@ -1,9 +1,11 @@
 <template>
   <div class="images-display">
-    <img :src="url" />
-    <ul>
+    <div class="image-container">
+      <img class="image-main" :src="url" />
+    </div>
+    <ul class="image-attributes">
       <li v-for="tag in info.Predictions" v-bind:key="tag.TagId">
-        <span>{{ tag.TagName }}</span><span>{{ tag.Probability }}%</span>
+        <span class="attribute-name">{{ tag.TagName }}</span><span class="attribute-value">{{ tag.Probability }}</span><span class="attribute-unit">%</span>
       </li>
     </ul>
   </div>
@@ -49,4 +51,31 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.images-display {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  margin: 0 auto;
+}
+img.image-main {
+  max-height: 480px;
+}
+ul.image-attributes {
+  list-style: none;
+  margin: 0.1em;
+  padding: 0;
+}
+ul.image-attributes li {
+  margin: 0.1em;
+}
+.attribute-name {
+  font-size: 1.1em;
+  margin-right: 0.5em;
+}
+.attribute-value {
+  font-size: 1.0em;
+}
+.attribute-unit {
+  font-size: 0.9em;
+}
 </style>
