@@ -14,6 +14,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 using PhotoBattlerFunctionApp.Helpers;
 using PhotoBattlerFunctionApp.Logics;
 using PhotoBattlerFunctionApp.Models;
@@ -64,7 +65,8 @@ namespace PhotoBattlerFunctionApp
             dynamic data = await req.Content.ReadAsAsync<object>();
             string imageData = data.image;
             ICollection<string> tags = data.tags.ToObject<List<string>>();
-            log.Info($"tags={string.Join(",", tags)}, image={imageData}");
+            string modelName = data.modelName;
+            log.Info($"modelName={modelName}tags={string.Join(",", tags)}, image={imageData}");
 
             var dataUrlReg = Regex.Match(imageData, @"data:image/(?<type>.+?);base64,(?<data>.+)");
             var image = Convert.FromBase64String(dataUrlReg.Groups["data"].Value);
@@ -89,7 +91,7 @@ namespace PhotoBattlerFunctionApp
             // setup blob
             var storageAccountConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
             var containerName = "photo";
-            var blobName = Guid.NewGuid().ToString() + "." + extension;
+            var blobName = DateTime.Now.Ticks + "-" + Guid.NewGuid().ToString() + "." + extension;
 
             var storageAccount = CloudStorageAccount.Parse(storageAccountConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
@@ -108,7 +110,7 @@ namespace PhotoBattlerFunctionApp
             // queue image
             TrainingImageLogic.AddImage(
                 imageUrls, queueItems, outImageUrlTable, log,
-                source, url, key, tags, user
+                source, url, key, tags, user, modelName
                 );
             log.Info($"after queue image data.");
 
@@ -126,7 +128,9 @@ namespace PhotoBattlerFunctionApp
             {
                 PartitionKey = source,
                 RowKey = key,
-                Result = predictResult
+                Result = predictResult,
+                User = user,
+                ModelName = modelName
             };
             outPredictedTable.Add(predicted);
 
@@ -144,23 +148,49 @@ namespace PhotoBattlerFunctionApp
             [Table("PredictedInfo")] IQueryable<PredictedInfo> predictedInfo,
             TraceWriter log)
         {
-            var storageAccountConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
-            var containerName = "photo";
             var blobName = name;
-
-            var storageAccount = CloudStorageAccount.Parse(storageAccountConnectionString);
-            var blobClient = storageAccount.CreateCloudBlobClient();
-            var container = blobClient.GetContainerReference(containerName);
-            var blockBlob = container.GetBlockBlobReference(blobName);
-
             var info = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey == blobName).First();
+
+            return req.CreateResponse(HttpStatusCode.OK, ImageInfo.FromNameAndResult(blobName, info));
+        }
+
+
+        [FunctionName("ImagePredictedList")]
+        public static HttpResponseMessage ImagePredictedList(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "images/predicted")]HttpRequestMessage req,
+            [Table("PredictedInfo")] IQueryable<PredictedInfo> predictedInfo,
+            TraceWriter log)
+        {
+            var startName = req.GetQueryNameValuePairs().Where(x => x.Key == "startName").FirstOrDefault().Value;
+            if (string.IsNullOrWhiteSpace(startName))
+            {
+                startName = "|";
+            }
+            var listCount = 25;
+            var infos = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey.CompareTo(startName) < 0).Take(listCount).ToList();
 
             return req.CreateResponse(HttpStatusCode.OK, new
             {
-                name = blockBlob.Name,
-                url = blockBlob.Uri,
-                result = info.Result
+                endName = infos.LastOrDefault()?.RowKey,
+                list = infos.Select(x => ImageInfo.FromNameAndResult(x.RowKey, x)).ToList()
             });
+        }
+
+        public class ImageInfo
+        {
+            public static ImageInfo FromNameAndResult(string name, PredictedInfo result)
+            {
+                return new ImageInfo()
+                {
+                    name = name,
+                    url = CommonHelper.PhotoBlobReference(name)?.Uri.ToString(),
+                    result = result
+                };
+            }
+
+            public string name { get; set; }
+            public string url { get; set; }
+            public PredictedInfo result { get; set; }
         }
     }
 }

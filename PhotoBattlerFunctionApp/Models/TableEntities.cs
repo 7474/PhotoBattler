@@ -12,6 +12,47 @@ using System.Web;
 
 namespace PhotoBattlerFunctionApp.Models
 {
+    public abstract class OwnedEntity : TableEntity
+    {
+        private IUser _user;
+        public IUser User { get { return _user; } set { _user = value; } }
+        public string UserType
+        {
+            get { return _user?.Type; }
+            set
+            {
+                if (_user != null)
+                {
+                    _user.Type = value;
+                }
+                else
+                {
+                    _user = new UserKey()
+                    {
+                        Type = value
+                    };
+                }
+            }
+        }
+        public string UserName
+        {
+            get { return _user?.Name; }
+            set
+            {
+                if (_user != null)
+                {
+                    _user.Name = value;
+                }
+                else
+                {
+                    _user = new UserKey()
+                    {
+                        Name = value
+                    };
+                }
+            }
+        }
+    }
     /// <summary>
     /// PartitionKey = Image source category.
     /// RowKey = Non rule.
@@ -24,11 +65,11 @@ namespace PhotoBattlerFunctionApp.Models
     /// RowKey: "Blob name"
     /// }
     /// </summary>
-    public class CreateImageFromUrlsEntity : TableEntity
+    public class CreateImageFromUrlsEntity : OwnedEntity
     {
         public string Url { get; set; }
         public ICollection<string> Tags { get; set; }
-        public IUser User { get; set; }
+        public string ModelName { get; set; }
     }
     /// <summary>
     /// PartitionKey = Item source category.
@@ -46,8 +87,9 @@ namespace PhotoBattlerFunctionApp.Models
     /// <summary>
     /// Keyは CreateImageFromUrlsEntity と同一とする。
     /// </summary>
-    public class PredictedInfo : TableEntity
+    public class PredictedInfo : OwnedEntity
     {
+        public string ModelName { get; set; }
         public ImagePrediction Result { get; set; }
         public string ResultJson
         {
@@ -64,8 +106,13 @@ namespace PhotoBattlerFunctionApp.Models
     //
     public interface IUser
     {
-        string Type { get; }
-        string Name { get; }
+        string Type { get; set; }
+        string Name { get; set; }
+    }
+    public class UserKey : IUser
+    {
+        public string Type { get; set; }
+        public string Name { get; set; }
     }
     public class User : TableEntity, IUser
     {

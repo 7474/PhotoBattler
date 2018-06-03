@@ -6,6 +6,7 @@ import axios from 'axios'
 import App from './App'
 import router from './router'
 import Api from './module/api'
+import ICountUp from 'vue-countup-v2'
 // XXX これはありなのか？
 window.api = new Api()
 
@@ -25,6 +26,7 @@ var state = {
   }
 }
 
+Vue.component('ICountUp', ICountUp)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

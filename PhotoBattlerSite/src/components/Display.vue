@@ -5,7 +5,13 @@
     </div>
     <ul class="image-attributes">
       <li v-for="tag in info.predictions" v-bind:key="tag.tagId">
-        <span class="attribute-name">{{ tag.tagName }}</span><span class="attribute-value">{{ tag.probability }}</span><span class="attribute-unit">%</span>
+        <span class="attribute-name">{{ tag.tagName }}</span><span class="attribute-value"><ICountUp
+          :startVal="0"
+          :endVal="(tag.probability * 100).toFixed(2)"
+          :decimals="2"
+          :duration="1.5"
+          :options="{}"
+        /></span><span class="attribute-unit">%</span>
       </li>
     </ul>
   </div>
@@ -36,7 +42,7 @@ export default {
         .then(response => {
           console.log(response)
           _this.url = response.data.url
-          _this.info = response.data.result
+          _this.info = response.data.result.Result
         })
         .catch(error => {
           console.error(error)
@@ -53,17 +59,19 @@ export default {
 <style scoped>
 .images-display {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   max-width: 600px;
-  margin: 0 auto;
+  margin: 1em auto;
 }
 img.image-main {
   max-height: 480px;
 }
 ul.image-attributes {
   list-style: none;
-  margin: 0.1em;
+  margin: 0 0 0 0.5em;
   padding: 0;
+  font-size: 0.8em;
 }
 ul.image-attributes li {
   margin: 0.1em;
@@ -76,6 +84,6 @@ ul.image-attributes li {
   font-size: 1.0em;
 }
 .attribute-unit {
-  font-size: 0.9em;
+  font-size: 0.7em;
 }
 </style>

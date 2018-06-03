@@ -22,14 +22,16 @@ export default class {
         })
     })
   }
-  imagesUpload (dataUrl, tags) {
+  imagesUpload (dataUrl, tags, modelName) {
     let paramDataUrl = dataUrl
     let paramTags = tags
+    let paramModelName = modelName
     return new Promise((resolve, reject) => {
       Vue.axios.post('/images/upload',
         {
           image: paramDataUrl,
-          tags: paramTags
+          tags: paramTags,
+          modelName: paramModelName
         })
         .then(function (response) {
           resolve(response)
@@ -42,6 +44,21 @@ export default class {
   imagesPredicted (name) {
     return new Promise((resolve, reject) => {
       Vue.axios.get('/images/predicted/' + name)
+        .then(function (response) {
+          resolve(response)
+        })
+        .catch(function (error) {
+          reject(error)
+        })
+    })
+  }
+  imagesPredictedList (startName) {
+    return new Promise((resolve, reject) => {
+      Vue.axios.get('/images/predicted', {
+        params: {
+          startName: startName || ''
+        }
+      })
         .then(function (response) {
           resolve(response)
         })

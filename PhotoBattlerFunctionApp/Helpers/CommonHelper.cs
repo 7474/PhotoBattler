@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -17,6 +19,22 @@ namespace PhotoBattlerFunctionApp.Helpers
                 var strResult = BitConverter.ToString(result);
                 return strResult.Replace("-", "");
             }
+        }
+
+        public static CloudBlockBlob CreateBlobReference(string storageAccountConnectionString, string containerName, string blobName)
+        {
+            var storageAccount = CloudStorageAccount.Parse(storageAccountConnectionString);
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var container = blobClient.GetContainerReference(containerName);
+            var blockBlob = container.GetBlockBlobReference(blobName);
+            return blockBlob;
+        }
+        public static CloudBlockBlob PhotoBlobReference(string blobName)
+        {
+            var storageAccountConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
+            var containerName = "photo";
+
+            return CreateBlobReference(storageAccountConnectionString, containerName, blobName);
         }
     }
 }

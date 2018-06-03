@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div class="menu">
     <router-link to="/upload">Upload</router-link>
+    <router-link to="/list">List</router-link>
   </div>
 </template>
 
@@ -12,4 +13,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.menu a {
+  min-width: 6em;
+  text-align: center;
+  display: inline-block;
+}
 </style>

@@ -1,8 +1,13 @@
 <template>
   <div class="images-upload">
-    <input type="file" name="image" v-on:change="detectFile" />
+    <div>
+      <input type="text" name="modelName" v-model="modelName" placeholder="Model Name" />
+    </div>
+    <div>
+      <input type="file" name="image" v-on:change="detectFile" />
+    </div>
     <div class="imates-upload-tags">
-      <select v-model="inputCategory">
+      <select v-model="inputCategory" placeholder="Category">
         <option v-for="option in CategoryTags" v-bind:key="option.Name" v-bind:value="option.Name">
           {{ option.Name }}
         </option>
@@ -10,7 +15,7 @@
       <div>(Category)</div>
     </div>
     <div class="imates-upload-tags">
-      <select v-model="inputItem">
+      <select v-model="inputItem" placeholder="Base Model">
         <option v-for="option in ItemTags" v-bind:key="option.Name" v-bind:value="option.Name">
           {{ option.Name }}
         </option>
@@ -48,7 +53,8 @@ export default {
       inputItem: null,
       inputAttributes: [],
       selectedFile: null,
-      imageData: 'data:image/gif;base64,R0lGODlhAQABAAAAACw='
+      imageData: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
+      modelName: null
     }
   },
   computed: {
@@ -77,8 +83,9 @@ export default {
       let _this = this
       let image = this.imageData
       let tags = [].concat(this.inputCategory, this.inputItem, this.inputAttributes).filter(x => !!x)
+      let modelName = this.modelName
       window.api
-        .imagesUpload(image, tags)
+        .imagesUpload(image, tags, modelName)
         .then(response => {
           console.log(response)
           _this.$router.push('/display/' + response.data.name)

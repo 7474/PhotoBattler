@@ -4,6 +4,7 @@ import HelloWorld from '@/components/HelloWorld'
 import SiteInfo from '@/components/SiteInfo'
 import Upload from '@/components/Upload'
 import Display from '@/components/Display'
+import List from '@/components/List'
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/display/:name',
       name: 'Display',
       component: Display
+    },
+    {
+      path: '/list',
+      name: 'List',
+      component: List
     }
   ]
 })

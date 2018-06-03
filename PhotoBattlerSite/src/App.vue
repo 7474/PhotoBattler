@@ -102,6 +102,14 @@ export default {
     font-size: 1em;
     padding: 0.2em;
   }
+  ::placeholder {
+    color: #00a000;
+    text-shadow: none;
+    padding: 0.4em;
+  }
+  input, select {
+    min-height: 1.8em;
+  }
   input, select, textarea {
     background-color: #043927;
     border: 1px solid #f0fff8;
@@ -118,6 +126,9 @@ export default {
   }
   input:focus, select:focus, textarea:focus {
     box-shadow: 0 0 20px #80ff80;
+  }
+  ul {
+    list-style: none;
   }
 
 </style>

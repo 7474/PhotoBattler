@@ -20,7 +20,8 @@ namespace PhotoBattlerFunctionApp.Logics
             string url,
             string key,
             ICollection<string> tags,
-            IUser user)
+            IUser user, 
+            string modelName = "")
         {
             queueItems.Add(new CreateImageFromUrlsRequest()
             {
@@ -37,7 +38,8 @@ namespace PhotoBattlerFunctionApp.Logics
                     RowKey = rowKey,
                     Url = url,
                     Tags = tags,
-                    User = user
+                    User = user,
+                    ModelName = modelName
                 });
                 log.Info($"{rowKey} entry to CreateImageFromUrls.");
             }
