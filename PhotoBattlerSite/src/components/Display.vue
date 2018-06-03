@@ -1,5 +1,9 @@
 <template>
   <div class="images-display">
+    <div class="image-info">
+      <h1>{{ image.ModelName || name }}</h1>
+      <ModelOwner :owner="image.User"></ModelOwner>
+    </div>
     <div class="image-container">
       <img v-show="name" class="image-main model-photo" :src="url" />
     </div>
@@ -7,9 +11,9 @@
       <li v-for="tag in info.predictions" v-bind:key="tag.tagId">
         <span class="attribute-name">{{ tag.tagName }}</span><span class="attribute-value"><ICountUp
           :startVal="0"
-          :endVal="(tag.probability * 100).toFixed(2)"
+          :endVal="(tag.probability * 100)"
           :decimals="2"
-          :duration="1.5"
+          :duration="2.5"
           :options="{}"
         /></span><span class="attribute-unit">%</span>
       </li>
@@ -24,6 +28,7 @@ export default {
     return {
       name: null,
       url: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
+      image: {},
       info: {}
     }
   },
@@ -42,6 +47,7 @@ export default {
         .then(response => {
           console.log(response)
           _this.url = response.data.url
+          _this.image = response.data.result
           _this.info = response.data.result.Result
         })
         .catch(error => {

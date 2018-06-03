@@ -17,5 +17,6 @@ export default {
   min-width: 6em;
   text-align: center;
   display: inline-block;
+  margin: auto 0.4em;
 }
 </style>

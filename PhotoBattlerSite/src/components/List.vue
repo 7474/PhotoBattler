@@ -7,7 +7,10 @@
             <div class="image-container">
               <img class="image-thumbnail model-photo" :src="image.url" />
             </div>
-            <div class="image-description">{{ image.modelName || image.name }}</div>
+            <div class="image-description">
+              <div>{{ image.modelName || image.name }}</div>
+              <ModelOwner :owner="image.result.User"></ModelOwner>
+            </div>
           </div>
         </router-link>
       </li>

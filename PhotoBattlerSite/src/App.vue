@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header id="header">
-      <router-link to="/"><img class="icon" src="./assets/logo.png"></router-link>
+      <router-link class="icon" to="/"><img class="icon" src="./assets/logo.png"></router-link>
       <app-menu class="menu"></app-menu>
       <user class="user"></user>
     </header>
@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style>
-  @import url(http://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
+  @import url(https://fonts.googleapis.com/earlyaccess/notosansjapanese.css);
   /* これSASSにまとめるのとどっちがいいねん。変数とかで色を管理したいよ。 */
   #app {
     position: relative;
@@ -101,6 +101,18 @@ export default {
     font-weight: 100;
     font-size: 1em;
     padding: 0.2em;
+  }
+  h1 {
+    font-size: 1.6em;
+  }
+  h2 {
+    font-size: 1.4em;
+  }
+  h3 {
+    font-size: 1.2em;
+  }
+  h4 {
+    font-size: 1.1em;
   }
   ::placeholder {
     color: #00a000;
