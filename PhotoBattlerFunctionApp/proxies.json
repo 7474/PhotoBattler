@@ -8,6 +8,13 @@
       },
       "backendUri": "%STATIC_SITE_PATH%/index.html"
     },
+    "staticFavicon": {
+      "matchCondition": {
+        "methods": [ "GET" ],
+        "route": "/favicon.ico"
+      },
+      "backendUri": "%STATIC_SITE_PATH%/favicon.ico"
+    },
     "staticSite": {
       "matchCondition": {
         "methods": [ "GET" ],

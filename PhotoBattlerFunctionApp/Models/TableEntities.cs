@@ -61,7 +61,15 @@ namespace PhotoBattlerFunctionApp.Models
         {
             // https://stackoverflow.com/questions/37582553/how-to-get-client-ip-address-in-azure-functions-c
             // インタフェースを堅くすると実際的に必要な要素にアクセスできなくて面倒くさい。
-            string clientIP = ((HttpContextWrapper)req.Properties["MS_HttpContext"]).Request.UserHostAddress;
+            string clientIP = "*";
+            try
+            {
+                clientIP = ((HttpContextWrapper)req.Properties["MS_HttpContext"]).Request.UserHostAddress;
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
             var type = principal.Identity.IsAuthenticated
                 ? principal.Identity.AuthenticationType
                 : "anonymous";

@@ -19,7 +19,7 @@ namespace PhotoBattlerFunctionApp
         /// <param name="imageCreateRequest"></param>
         /// <param name="log"></param>
         [FunctionName("CreateImageFromUrls")]
-        public static void Run([QueueTrigger("create-image-from-urls")]CreateImageFromUrlsRequest imageCreateRequest, TraceWriter log)
+        public static void CreateImageFromUrls([QueueTrigger("create-image-from-urls")]CreateImageFromUrlsRequest imageCreateRequest, TraceWriter log)
         {
             log.Info($"C# Queue trigger function processed: {imageCreateRequest}");
 

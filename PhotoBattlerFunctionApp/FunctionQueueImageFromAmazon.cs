@@ -27,7 +27,7 @@ namespace PhotoBattlerFunctionApp
         private const string NAMESPACE = "http://webservices.amazon.com/AWSECommerceService/2011-08-01";
 
         [FunctionName("QueueImageFromAmazon")]
-        public static async Task<HttpResponseMessage> Run(
+        public static async Task<HttpResponseMessage> QueueImageFromAmazon(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = "createimage/amazon")]HttpRequestMessage req,
             [Table("CreateImageFromUrls")] IQueryable<CreateImageFromUrlsEntity> imageUrls,
             [Table("Items")] IQueryable<Item> items,

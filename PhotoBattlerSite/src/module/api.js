@@ -22,12 +22,14 @@ export default class {
         })
     })
   }
-  imagesUpload (dataUrl, extension, tags) {
+  imagesUpload (dataUrl, tags) {
+    let paramDataUrl = dataUrl
+    let paramTags = tags
     return new Promise((resolve, reject) => {
       Vue.axios.post('/images/upload',
         {
-          image: dataUrl,
-          tags: tags
+          image: paramDataUrl,
+          tags: paramTags
         })
         .then(function (response) {
           resolve(response)

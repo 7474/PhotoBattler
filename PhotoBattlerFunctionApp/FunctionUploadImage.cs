@@ -58,7 +58,16 @@ namespace PhotoBattlerFunctionApp
             [Table("PredictedInfo")]ICollector<PredictedInfo> outPredictedTable,
             TraceWriter log)
         {
+
             log.Info("C# HTTP trigger function processed a request.");
+
+            // collect input
+            dynamic data = await req.Content.ReadAsAsync<object>();
+            string imageData = data.image;
+            var dataUrlReg = Regex.Match(imageData, @"data:image/(?<type>.+?);base64,(?<data>.+)");
+            var image = Convert.FromBase64String(dataUrlReg.Groups["data"].Value);
+            ICollection<string> tags = data.tags.ToObject<List<string>>();
+            var extension = dataUrlReg.Groups["type"].Value;
 
             // client
             var CV_ProjectId = Environment.GetEnvironmentVariable("CV_ProjectId");
@@ -71,14 +80,6 @@ namespace PhotoBattlerFunctionApp
             // collect user
             var user = User.FromRequest(req, Thread.CurrentPrincipal);
             var iuser = user as IUser;
-
-            // collect input
-            dynamic data = await req.Content.ReadAsAsync<object>();
-            //             var base64Data = Regex.Match(data, @"data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
-            var dataUrlReg = Regex.Match(data.image as string, @"data:image/(?<type>.+?),(?<data>.+)");
-            var image = Convert.FromBase64String(dataUrlReg.Groups["data"].Value);
-            ICollection<string> tags = data.tags.ToObject<List<string>>();
-            var extension = dataUrlReg.Groups["type"].Value;
 
             // XXX ÇøÇ·ÇÒÇ∆ÇµÇΩåüèÿ
             var existTags = await trainingApi.GetTagsAsync(projectId);
