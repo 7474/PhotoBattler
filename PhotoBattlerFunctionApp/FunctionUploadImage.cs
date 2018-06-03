@@ -132,7 +132,7 @@ namespace PhotoBattlerFunctionApp
 
             return req.CreateResponse(HttpStatusCode.OK, new
             {
-                path = blockBlob.Name,
+                name = blockBlob.Name,
                 url = url,
                 result = predictResult
             });
@@ -157,7 +157,7 @@ namespace PhotoBattlerFunctionApp
 
             return req.CreateResponse(HttpStatusCode.OK, new
             {
-                path = blockBlob.Name,
+                name = blockBlob.Name,
                 url = blockBlob.Uri,
                 result = info.Result
             });
