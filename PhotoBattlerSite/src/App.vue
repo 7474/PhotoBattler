@@ -2,7 +2,7 @@
   <div id="app">
     <header id="header">
       <img class="icon" src="./assets/logo.png">
-      <menu class="menu"></menu>
+      <app-menu class="menu"></app-menu>
       <user class="user"></user>
     </header>
     <div id="contents">
@@ -16,12 +16,12 @@
 
 <script>
 import User from './components/User.vue'
-import Menu from './components/Menu.vue'
+import AppMenu from './components/Menu.vue'
 export default {
   name: 'App',
   components: {
     'User': User,
-    'Menu': Menu
+    'AppMenu': AppMenu
   }
 }
 </script>
@@ -40,6 +40,9 @@ export default {
     text-shadow:
       #00ff73 0 0 1px;
     min-height: 100%;
+  }
+  #app a {
+    color: #80ffc0;
   }
   #header {
     margin:   0;

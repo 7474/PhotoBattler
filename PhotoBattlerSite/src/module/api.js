@@ -11,4 +11,41 @@ export default class {
         })
     })
   }
+  tags () {
+    return new Promise((resolve, reject) => {
+      Vue.axios.get('/tags')
+        .then(function (response) {
+          resolve(response)
+        })
+        .catch(function (error) {
+          reject(error)
+        })
+    })
+  }
+  imagesUpload (dataUrl, extension, tags) {
+    return new Promise((resolve, reject) => {
+      Vue.axios.post('/images/upload',
+        {
+          image: dataUrl,
+          tags: tags
+        })
+        .then(function (response) {
+          resolve(response)
+        })
+        .catch(function (error) {
+          reject(error)
+        })
+    })
+  }
+  imagesPredicted (name) {
+    return new Promise((resolve, reject) => {
+      Vue.axios.get('/images/predicted/' + name)
+        .then(function (response) {
+          resolve(response)
+        })
+        .catch(function (error) {
+          reject(error)
+        })
+    })
+  }
 }

@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import OAuthioWeb from 'oauthio-web'
-let OAuth = OAuthioWeb.OAuthio.OAuth
+// import OAuthioWeb from 'oauthio-web'
+// let OAuth = OAuthioWeb.OAuthio.OAuth
 export default {
   name: 'User',
   computed: {
@@ -22,7 +22,7 @@ export default {
   },
   methods: {
     authenticate (provider) {
-      let _this = this
+      // let _this = this
       // XXX OAuth.js中間サービスじゃん。分かりづらいねん。。。
       // OAuth.initialize(this.$root.env.twitter.clientId)
       // OAuth.popup(provider)

@@ -13,6 +13,7 @@ using System.Xml;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
+using PhotoBattlerFunctionApp.Helpers;
 
 namespace PhotoBattlerFunctionApp
 {
@@ -63,23 +64,25 @@ namespace PhotoBattlerFunctionApp
                 log.Verbose($"requestUrl: {requestUrl}");
 
                 var images = Fetch(requestUrl);
-                images.ToList().ForEach((x) =>
+                images.ToList().ForEach((url) =>
                 {
                     imageCount++;
+                    var rowKey = asin + CommonHelper.MD5Hash(url);
+                    var source = "Amazon";
+
                     queueItems.Add(new CreateImageFromUrlsRequest()
                     {
-                        Url = x,
+                        Url = url,
                         Tags = tags
                     });
-                    var rowKey = asin + MD5Hash(x);
                     // XXX Existチェックしたいだけなのだが
-                    if (imageUrls.Where(y => y.PartitionKey == "Amazon" && y.RowKey == rowKey).ToList().Count() == 0)
+                    if (imageUrls.Where(y => y.PartitionKey == source && y.RowKey == rowKey).ToList().Count() == 0)
                     {
                         outImageUrlTable.Add(new CreateImageFromUrlsEntity()
                         {
-                            PartitionKey = "Amazon",
+                            PartitionKey = source,
                             RowKey = rowKey,
-                            Url = x,
+                            Url = url,
                             Tags = tags
                         });
                         log.Info($"{rowKey} entry to CreateImageFromUrls.");
@@ -149,16 +152,6 @@ namespace PhotoBattlerFunctionApp
             catch (Exception)
             {
                 throw;
-            }
-        }
-
-        private static string MD5Hash(string input)
-        {
-            using (var md5 = MD5.Create())
-            {
-                var result = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
-                var strResult = BitConverter.ToString(result);
-                return strResult.Replace("-", "");
             }
         }
 

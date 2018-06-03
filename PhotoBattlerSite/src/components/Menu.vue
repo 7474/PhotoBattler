@@ -1,5 +1,6 @@
 <template>
   <div>
+    <router-link to="/upload">Go to Foo</router-link>
   </div>
 </template>
 
