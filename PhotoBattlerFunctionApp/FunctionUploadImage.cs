@@ -58,15 +58,16 @@ namespace PhotoBattlerFunctionApp
             [Table("PredictedInfo")]ICollector<PredictedInfo> outPredictedTable,
             TraceWriter log)
         {
-
             log.Info("C# HTTP trigger function processed a request.");
 
             // collect input
             dynamic data = await req.Content.ReadAsAsync<object>();
             string imageData = data.image;
+            ICollection<string> tags = data.tags.ToObject<List<string>>();
+            log.Info($"tags={string.Join(",", tags)}, image={imageData}");
+
             var dataUrlReg = Regex.Match(imageData, @"data:image/(?<type>.+?);base64,(?<data>.+)");
             var image = Convert.FromBase64String(dataUrlReg.Groups["data"].Value);
-            ICollection<string> tags = data.tags.ToObject<List<string>>();
             var extension = dataUrlReg.Groups["type"].Value;
 
             // client
@@ -88,7 +89,7 @@ namespace PhotoBattlerFunctionApp
             // setup blob
             var storageAccountConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
             var containerName = "photo";
-            var blobName = Guid.NewGuid().ToString() + extension;
+            var blobName = Guid.NewGuid().ToString() + "." + extension;
 
             var storageAccount = CloudStorageAccount.Parse(storageAccountConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
@@ -111,14 +112,12 @@ namespace PhotoBattlerFunctionApp
             // predict image
             // XXX こっちもキューにした方がいいんちゃうか
             // https://docs.microsoft.com/ja-jp/azure/cognitive-services/custom-vision-service/csharp-tutorial
-
-
             var imageUrl = new ImageUrl()
             {
                 Url = url
             };
+            // XXX Storage emurator で通すならNgrock等の工夫が必要。単にDevelop用のStorage Accountを取ってしまった方が楽かも。
             var predictResult = await predictionEndpoint.PredictImageUrlAsync(projectId, imageUrl);
-
             var predicted = new PredictedInfo()
             {
                 PartitionKey = source,

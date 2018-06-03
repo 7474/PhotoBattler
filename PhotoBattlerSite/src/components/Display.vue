@@ -15,7 +15,7 @@ export default {
   data () {
     return {
       name: null,
-      url: "data:image/gif;base64,R0lGODlhAQABAAAAACw=",
+      url: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
       info: {}
     }
   },

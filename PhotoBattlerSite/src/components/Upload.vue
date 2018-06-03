@@ -29,7 +29,7 @@ export default {
       tags: [],
       inputTags: [],
       selectedFile: null,
-      imageData: 'data:image/gif;base64,R0lGODlhAQABAIAAAP'
+      imageData: 'data:image/gif;base64,R0lGODlhAQABAAAAACw='
     }
   },
   computed: {
