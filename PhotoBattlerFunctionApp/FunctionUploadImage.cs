@@ -49,7 +49,7 @@ namespace PhotoBattlerFunctionApp
                     Category = categories.Contains(x.Name)
                         ? "Category"
                         : categories.Any(y => x.Name.StartsWith(y))
-                            ? "Category"
+                            ? "Item"
                             : "Attribute",
                     AttributeType = "None",
                     Name = x.Name
