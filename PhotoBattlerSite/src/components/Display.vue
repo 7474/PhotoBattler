@@ -4,20 +4,22 @@
       <h1>{{ image.ModelName || name }}</h1>
       <ModelOwner :owner="image.User"></ModelOwner>
     </div>
-    <div class="image-container">
-      <img v-show="name" class="image-main model-photo" :src="url" />
+    <div class="images-spec">
+      <div class="image-container">
+        <img v-show="name" class="image-main model-photo" :src="url" />
+      </div>
+      <ul class="image-attributes">
+        <li v-for="tag in info.predictions" v-bind:key="tag.tagId">
+          <span class="attribute-name">{{ tag.tagName }}</span><span class="attribute-value"><ICountUp
+            :startVal="0"
+            :endVal="(tag.probability * 100)"
+            :decimals="2"
+            :duration="2.5"
+            :options="{}"
+          /></span><span class="attribute-unit">%</span>
+        </li>
+      </ul>
     </div>
-    <ul class="image-attributes">
-      <li v-for="tag in info.predictions" v-bind:key="tag.tagId">
-        <span class="attribute-name">{{ tag.tagName }}</span><span class="attribute-value"><ICountUp
-          :startVal="0"
-          :endVal="(tag.probability * 100)"
-          :decimals="2"
-          :duration="2.5"
-          :options="{}"
-        /></span><span class="attribute-unit">%</span>
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -57,6 +59,20 @@ export default {
   },
   mounted () {
     this.name = this.$route.params.name
+  },
+  metaInfo () {
+    return {
+      title: this.image.ModelName || this.name,
+      titleTemplate: '%s | Photo Battler',
+      meta: [
+        { name: 'twitter:card', content: 'summary' },
+        // 男のハードコーディング
+        { name: 'twitter:site', content: '@kudenpa' },
+        // { name: 'twitter:title', content: (this.image.ModelName || this.name) + ' | Photo Battler' },
+        // { name: 'twitter:description', content: '' },
+        { name: 'twitter:image', content: this.url }
+      ]
+    }
   }
 }
 </script>
@@ -65,15 +81,21 @@ export default {
 <style scoped>
 .images-display {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   max-width: 600px;
   margin: 1em auto;
 }
+.images-spec {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
 img.image-main {
+  max-width: 320px;
   max-height: 480px;
 }
 ul.image-attributes {
+  max-width: 260px;
   list-style: none;
   margin: 0 0 0 0.5em;
   padding: 0;

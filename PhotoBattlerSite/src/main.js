@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import VueAxios from 'vue-axios'
+import Meta from 'vue-meta'
 import axios from 'axios'
 import App from './App'
 import router from './router'
@@ -29,6 +30,7 @@ var state = {
 
 Vue.component('ICountUp', ICountUp)
 Vue.component('ModelOwner', ModelOwner)
+Vue.use(Meta)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

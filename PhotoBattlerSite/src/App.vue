@@ -23,6 +23,15 @@ export default {
   components: {
     'User': User,
     'AppMenu': AppMenu
+  },
+  metaInfo: {
+    title: 'Photo Battler',
+    meta: [
+      { name: 'twitter:card', content: 'summary' },
+      // 男のハードコーディング
+      { name: 'twitter:site', content: '@kudenpa' },
+      { name: 'twitter:image', content: '/site/images/dream.png' }
+    ]
   }
 }
 </script>
