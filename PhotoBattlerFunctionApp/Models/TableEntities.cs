@@ -68,8 +68,19 @@ namespace PhotoBattlerFunctionApp.Models
     public class CreateImageFromUrlsEntity : OwnedEntity
     {
         public string Url { get; set; }
-        public ICollection<string> Tags { get; set; }
         public string ModelName { get; set; }
+        public ICollection<string> Tags { get; set; }
+        public string TagsJson
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(this.Tags);
+            }
+            set
+            {
+                this.Tags = JsonConvert.DeserializeObject<ICollection<string>>(value);
+            }
+        }
     }
     /// <summary>
     /// PartitionKey = Item source category.
@@ -83,6 +94,17 @@ namespace PhotoBattlerFunctionApp.Models
     {
         public string Name { get; set; }
         public ICollection<string> Tags { get; set; }
+        public string TagsJson
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(this.Tags);
+            }
+            set
+            {
+                this.Tags = JsonConvert.DeserializeObject<ICollection<string>>(value);
+            }
+        }
     }
     /// <summary>
     /// Keyは CreateImageFromUrlsEntity と同一とする。
