@@ -37,11 +37,18 @@ namespace PhotoBattlerFunctionApp
 
             var tags = existTags.Select(x =>
             {
+                var categories = new string[]
+                {
+                    "FA:G",
+                    "HGUC",
+                    "MG",
+                    "RG"
+                };
                 return new
                 {
-                    Category = x.Name.StartsWith("FA:G ")
-                        ? "Item"
-                        : x.Name == "FA:G"
+                    Category = categories.Contains(x.Name)
+                        ? "Category"
+                        : categories.Any(y => x.Name.StartsWith(y))
                             ? "Category"
                             : "Attribute",
                     AttributeType = "None",
