@@ -31,7 +31,11 @@ namespace PhotoBattlerFunctionApp
             // ZUMOÇ≈îFèÿÇ∑ÇÈÇ∆TypeÇ™FederationÅANameÇ™NullÇ»ÇÃÇ≈é¿ë‘ÇÇ›ÇÈ
             try
             {
-                log.Info(JsonConvert.SerializeObject(principal.Identity));
+                log.Info(JsonConvert.SerializeObject(principal.Identity, new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                }));
             }
             catch (Exception ex)
             {
@@ -39,7 +43,11 @@ namespace PhotoBattlerFunctionApp
             }
             try
             {
-                log.Info(JsonConvert.SerializeObject(principal));
+                log.Info(JsonConvert.SerializeObject(principal, new JsonSerializerSettings()
+                {
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                    Formatting = Formatting.Indented
+                }));
             }
             catch (Exception ex)
             {
