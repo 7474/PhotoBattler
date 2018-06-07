@@ -3,9 +3,15 @@ export default class {
   getPrincipal () {
     return Vue.axios.get('/auth/principal')
   }
-  authTwitter (returnUrl) {
-    return Vue.axios.post('/auth/twitter', {
+  authTwitterRequestToken (returnUrl) {
+    return Vue.axios.post('/auth/twitter/request_token', {
       returnUrl: returnUrl
+    })
+  }
+  authTwitterAccessToken (oauthToken, oauthVerifier) {
+    return Vue.axios.post('/auth/twitter/access_token', {
+      oauthToken: oauthToken,
+      oauthVerifier: oauthVerifier
     })
   }
   tags () {

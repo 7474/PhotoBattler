@@ -29,16 +29,9 @@ export default {
   },
   methods: {
     authenticate (provider) {
-      //         _this.axios.defaults.headers.common['X-ZUMO-AUTH'] = response.data.zumo_token
-      //         _this.updateAuthInfo()
-      // window.location =
-      //   this.$root.env.baseUrl +
-      //   '/.auth/login/twitter?ReturnUrl=' +
-      //   location.pathname +
-      //   location.hash
-      let returnUrl = this.$root.env.baseUrl + '/'
-      // + location.pathname + location.hash
-      window.api.authTwitter(returnUrl)
+      // XXX twitter only
+      let returnUrl = this.$root.env.baseUrl + location.pathname + location.hash
+      window.api.authTwitterRequestToken(returnUrl)
         .then(response => {
           console.log(response)
           window.location = 'https://api.twitter.com/oauth/authenticate?oauth_token=' + response.data.oauth_token

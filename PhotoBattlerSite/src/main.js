@@ -24,26 +24,35 @@ Vue.config.productionTip = false
 // 他の処理をする前にコールバックされた認証情報を取得してAPIに送出する
 const parsedQueryString = queryString.parse(location.search)
 if (parsedQueryString.oauth_token) {
-  axios.post(process.env.apiRoot + '/.auth/login/twiter', {
-    oauth_token: parsedQueryString.oauth_token,
-    oauth_verifier: parsedQueryString.oauth_verifier
-  })
+  window.api.authTwitterAccessToken(parsedQueryString.oauth_token, parsedQueryString.oauth_verifier)
     .then((response) => {
       console.log(response.data)
-      // TODO ローカルストレージに書いて復元する
-      let zumo = response.data.authenticationToken
-      axios.defaults.headers.common['X-ZUMO-AUTH'] = zumo
       // XXX ルーティングをハッシュでなくしたらこれだと死ぬ予感
       router.replace('/')
-      if (vm) {
-        vm.state.zumo = zumo
-      }
+      axios.post(process.env.apiRoot + '/.auth/login/twitter', {
+        access_token: response.data.oauthToken,
+        access_token_secret: response.data.oauthTokenSecret
+        // oauth_token: response.data.oauthToken,
+        // oauth_token_secret: response.data.oauthTokenSecret
+      })
+        .then((response) => {
+          console.log(response.data)
+          // TODO ローカルストレージに書いて復元する
+          let zumo = response.data.authenticationToken
+          axios.defaults.headers.common['X-ZUMO-AUTH'] = zumo
+          if (vm) {
+            vm.state.zumo = zumo
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+          if (vm) {
+            vm.state.zumo = null
+          }
+        })
     })
     .catch((error) => {
       console.error(error)
-      if (vm) {
-        vm.state.zumo = null
-      }
     })
 }
 

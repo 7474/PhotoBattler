@@ -72,7 +72,7 @@ namespace PhotoBattlerFunctionApp.Helpers
             // return signature;
         }
         // https://developer.twitter.com/en/docs/basics/authentication/api-reference/request_token
-        public static string BuildRequestTokenAuthorizationHeader(string requestTokenUrl, string callbackUrl, string consumerKey, string consumerSecret)
+        public static string BuildRequestAuthorizationHeader(string requestTokenUrl, string callbackUrl, string consumerKey, string consumerSecret)
         {
             var nonce = GetNonce();
             var timeStamp = GetTimeStamp();
@@ -81,6 +81,28 @@ namespace PhotoBattlerFunctionApp.Helpers
             {
                 "oauth_nonce=" + nonce,
                 "oauth_callback=" +  Uri.EscapeDataString(callbackUrl),
+                "oauth_signature_method=HMAC-SHA1",
+                "oauth_timestamp=" + timeStamp,
+                "oauth_consumer_key=" + consumerKey,
+                "oauth_version=1.0"
+            };
+
+            var singatureBaseString = GetSignatureBaseString("POST", requestTokenUrl, requestParameters);
+            var signature = GetSignature(singatureBaseString, consumerSecret);
+
+            requestParameters.Add("oauth_signature=" + Uri.EscapeDataString(signature));
+
+            return string.Join(", ", requestParameters);
+        }
+        public static string BuildAccessAuthorizationHeader(string requestTokenUrl, string oauthToken, string consumerKey, string consumerSecret)
+        {
+            var nonce = GetNonce();
+            var timeStamp = GetTimeStamp();
+
+            var requestParameters = new List<string>
+            {
+                "oauth_nonce=" + nonce,
+                "oauth_token=" + oauthToken,
                 "oauth_signature_method=HMAC-SHA1",
                 "oauth_timestamp=" + timeStamp,
                 "oauth_consumer_key=" + consumerKey,
