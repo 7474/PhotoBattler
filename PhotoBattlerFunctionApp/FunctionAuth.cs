@@ -62,6 +62,12 @@ namespace PhotoBattlerFunctionApp
             var response = await httpClient.SendAsync(requestMsg);
             var responseText = await response.Content.ReadAsStringAsync();
 
+            log.Info(responseText);
+            if (!response.IsSuccessStatusCode)
+            {
+                return req.CreateResponse(response.StatusCode, responseText);
+            }
+
             string oauthToken = null;
             string oauthTokenSecret = null;
 
@@ -79,6 +85,7 @@ namespace PhotoBattlerFunctionApp
                         break;
                 }
             }
+
 
             return req.CreateResponse(HttpStatusCode.OK,
                 new
