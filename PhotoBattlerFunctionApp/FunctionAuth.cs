@@ -93,7 +93,7 @@ namespace PhotoBattlerFunctionApp
             return req.CreateResponse(HttpStatusCode.OK,
                 new
                 {
-                    oauth_token = oauthToken,
+                    oauthToken = oauthToken,
                     oauthTokenSecret = oauthTokenSecret
                 });
         }
@@ -149,7 +149,7 @@ namespace PhotoBattlerFunctionApp
             return req.CreateResponse(HttpStatusCode.OK,
                 new
                 {
-                    oauth_token = oauthToken,
+                    oauthToken = oauthToken,
                     oauthTokenSecret = oauthTokenSecret
                 });
         }
