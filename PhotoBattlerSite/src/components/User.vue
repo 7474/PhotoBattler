@@ -34,7 +34,7 @@ export default {
       window.api.authTwitterRequestToken(returnUrl)
         .then(response => {
           console.log(response)
-          window.location = 'https://api.twitter.com/oauth/authenticate?oauth_token=' + response.data.oauth_token
+          window.location = 'https://api.twitter.com/oauth/authenticate?oauth_token=' + response.data.oauthToken
         })
         .catch(error => {
           console.error(error)
