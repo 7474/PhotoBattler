@@ -28,6 +28,23 @@ namespace PhotoBattlerFunctionApp
                 type = principal.Identity.AuthenticationType,
                 name = principal.Identity.Name
             };
+            // ZUMOÇ≈îFèÿÇ∑ÇÈÇ∆TypeÇ™FederationÅANameÇ™NullÇ»ÇÃÇ≈é¿ë‘ÇÇ›ÇÈ
+            try
+            {
+                log.Info(JsonConvert.SerializeObject(principal.Identity));
+            }
+            catch (Exception ex)
+            {
+                log.Warning(ex.Message);
+            }
+            try
+            {
+                log.Info(JsonConvert.SerializeObject(principal));
+            }
+            catch (Exception ex)
+            {
+                log.Warning(ex.Message);
+            }
 
             return req.CreateResponse(HttpStatusCode.OK,
                 new
@@ -38,13 +55,13 @@ namespace PhotoBattlerFunctionApp
         }
 
         private static TinyOAuthConfig twitterConfig = new TinyOAuthConfig
-            {
-                AccessTokenUrl = "https://api.twitter.com/oauth/access_token",
-                AuthorizeTokenUrl = "https://api.twitter.com/oauth/authorize",
-                RequestTokenUrl = "https://api.twitter.com/oauth/request_token",
-                ConsumerKey = Environment.GetEnvironmentVariable("TWITTER_CONSUMER_KEY"),
-                ConsumerSecret = Environment.GetEnvironmentVariable("TWITTER_CONSUMER_SECRET")
-            };
+        {
+            AccessTokenUrl = "https://api.twitter.com/oauth/access_token",
+            AuthorizeTokenUrl = "https://api.twitter.com/oauth/authorize",
+            RequestTokenUrl = "https://api.twitter.com/oauth/request_token",
+            ConsumerKey = Environment.GetEnvironmentVariable("TWITTER_CONSUMER_KEY"),
+            ConsumerSecret = Environment.GetEnvironmentVariable("TWITTER_CONSUMER_SECRET")
+        };
         [FunctionName("AuthTwitterRequestToken")]
         public static async Task<HttpResponseMessage> PostTwitterRequestTokenAsync(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth/twitter/request_token")]HttpRequestMessage req, TraceWriter log)
@@ -113,7 +130,7 @@ namespace PhotoBattlerFunctionApp
                 Method = HttpMethod.Post,
                 RequestUri = new Uri(twitterConfig.AccessTokenUrl),
                 Content = new StringContent($"oauth_verifier={paramOauthVerifier}")
-                
+
             };
             requestMsg.Content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
             requestMsg.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", authorization);
