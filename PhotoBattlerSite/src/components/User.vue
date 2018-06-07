@@ -8,8 +8,7 @@
 </template>
 
 <script>
-// import OAuthioWeb from 'oauthio-web'
-// let OAuth = OAuthioWeb.OAuthio.OAuth
+
 export default {
   name: 'User',
   computed: {
@@ -18,43 +17,35 @@ export default {
     },
     isAuthenticated () {
       return this.$root.state.isAuthenticated
+    },
+    zumo () {
+      return this.$root.state.isAuthenticated
+    }
+  },
+  watch: {
+    zumo () {
+      this.updateAuthInfo()
     }
   },
   methods: {
     authenticate (provider) {
-      // let _this = this
-      // XXX OAuth.js中間サービスじゃん。分かりづらいねん。。。
-      // OAuth.initialize(this.$root.env.twitter.clientId)
-      // OAuth.popup(provider)
-      //   .done(result => {
-      //     _this.axios.post(_this.$root.env.baseUrl + '/.auth/login/' + provider, {
-      //       access_token: result.access_token
-      //     })
-      //       .then(response => {
-      //         // XXX なにがくんの？
-      //         console.log(response)
-      //         // XXX Cookieなりに入れて再利用する
       //         _this.axios.defaults.headers.common['X-ZUMO-AUTH'] = response.data.zumo_token
       //         _this.updateAuthInfo()
-      //       })
-      //       .catch(error => {
-      //         console.error(error)
-      //       })
-      //   })
-      //   .fail(error => {
-      //     console.error(error)
-      //   })
-      // とりあえずこの辺を見るのがいいんじゃないかな？
-      // https://docs.microsoft.com/ja-jp/azure/app-service/app-service-authentication-overview
-      // しかし
-      // > さらには Azure Functions でも、最小限のコードを記述するだけで、またはまったく記述せずに、ユーザーのサインインとデータへのアクセスを可能にできます。
-      // これは嘘だろう。。。
-      // とりあえず ReturnUrl というパラメータは存在しないし、インタフェースのリファレンスも存在しない
-      window.location =
-        this.$root.env.baseUrl +
-        '/.auth/login/twitter?ReturnUrl=' +
-        location.pathname +
-        location.hash
+      // window.location =
+      //   this.$root.env.baseUrl +
+      //   '/.auth/login/twitter?ReturnUrl=' +
+      //   location.pathname +
+      //   location.hash
+      let returnUrl = this.$root.env.baseUrl + '/'
+      // + location.pathname + location.hash
+      window.api.authTwitter(returnUrl)
+        .then(response => {
+          console.log(response)
+          window.location = 'https://api.twitter.com/oauth/authenticate?oauth_token=' + response.data.oauth_token
+        })
+        .catch(error => {
+          console.error(error)
+        })
     },
     updateAuthInfo () {
       let _this = this
