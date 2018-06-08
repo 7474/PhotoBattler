@@ -22,37 +22,19 @@ namespace PhotoBattlerFunctionApp
             log.Info("C# HTTP trigger function processed a request.");
 
             var principal = Thread.CurrentPrincipal;
-            // 未認証時にIdentityをシリアライズすると特定のプロパティを参照した際に例外が発生するため、最小限安全なプロパティのみを参照する
             var user = new
             {
                 type = principal.Identity.AuthenticationType,
                 name = principal.Identity.Name
             };
             // ZUMOで認証するとTypeがFederation、NameがNullなので実態をみる
-            try
+            log.Info(JsonConvert.SerializeObject(principal.Identity, new JsonSerializerSettings()
             {
-                log.Info(JsonConvert.SerializeObject(principal.Identity, new JsonSerializerSettings()
-                {
-                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                    Formatting = Formatting.Indented
-                }));
-            }
-            catch (Exception ex)
-            {
-                log.Warning(ex.Message);
-            }
-            try
-            {
-                log.Info(JsonConvert.SerializeObject(principal, new JsonSerializerSettings()
-                {
-                    PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                    Formatting = Formatting.Indented
-                }));
-            }
-            catch (Exception ex)
-            {
-                log.Warning(ex.Message);
-            }
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                Formatting = Formatting.Indented
+            }));
+            log.Info(JsonConvert.SerializeObject(
+                req.Headers.Select(x => $"{x.Key}: {string.Join(",", x.Value)}").ToList()));
 
             return req.CreateResponse(HttpStatusCode.OK,
                 new
