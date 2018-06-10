@@ -6,10 +6,12 @@
     </div>
     <div class="images-spec">
       <div class="image-container">
-        <img v-show="name" class="image-main model-photo" :src="url" />
+        <transition name="model-photo-fade">
+          <img v-show="url" class="image-main model-photo" :src="url" />
+        </transition>
       </div>
       <ul class="image-attributes">
-        <li v-for="tag in info.predictions" v-bind:key="tag.tagId">
+        <li v-for="tag in predictions" v-bind:key="tag.tagId">
           <span class="attribute-name">{{ tag.tagName }}</span><span class="attribute-value"><ICountUp
             :startVal="0"
             :endVal="(tag.probability * 100)"
@@ -29,9 +31,11 @@ export default {
   data () {
     return {
       name: null,
-      url: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
+      url: null,
       image: {},
-      info: {}
+      info: {},
+      predictions: [],
+      predictionsQueue: []
     }
   },
   computed: {
@@ -51,10 +55,18 @@ export default {
           _this.url = response.data.url
           _this.image = response.data.result
           _this.info = response.data.result.Result
+          _this.predictionsQueue = _this.info.predictions
+          _this.processPredictionsQueue()
         })
         .catch(error => {
           console.error(error)
         })
+    },
+    processPredictionsQueue () {
+      this.predictions.push(this.predictionsQueue.shift())
+      if (this.predictionsQueue.length > 0) {
+        setTimeout(this.processPredictionsQueue, 100)
+      }
     }
   },
   mounted () {

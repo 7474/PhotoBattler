@@ -106,6 +106,15 @@ export default {
     border: 1px solid #f0fff8;
     box-shadow: 0 0 10px #00ff00;
   }
+  .model-photo-fade-enter-active {
+    transition: opacity .5s;
+  }
+  .model-photo-fade-leave-active {
+    transition: opacity .5s;
+  }
+  .model-photo-fade-enter, .model-photo-fade-leave-to {
+    opacity: 0;
+  }
   button, #app .menu a {
     background-color: transparent;
     border: 1px solid #f0fff8;
