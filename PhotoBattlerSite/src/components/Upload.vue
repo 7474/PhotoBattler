@@ -8,6 +8,7 @@
     </div>
     <div class="imates-upload-tags">
       <select v-model="inputCategory" placeholder="Category">
+        <option valule="">該当なし</option>
         <option v-for="option in CategoryTags" v-bind:key="option.Name" v-bind:value="option.Name">
           {{ option.Name }}
         </option>
@@ -16,6 +17,7 @@
     </div>
     <div class="imates-upload-tags">
       <select v-model="inputItem" placeholder="Base Model">
+        <option valule="">該当なし</option>
         <option v-for="option in ItemTags" v-bind:key="option.Name" v-bind:value="option.Name">
           {{ option.Name }}
         </option>
@@ -39,6 +41,12 @@
     </div>
     <div>
       <img v-show="selectedFile" class="model-photo" :src="imageData"/>
+    </div>
+    <div class="alert alert-info">
+      <ul>
+        <li>ここでの選択と測定結果は異なります。</li>
+        <li>選択候補が不足している場合は、その旨をお知らせください。</li>
+      </ul>
     </div>
   </div>
 </template>

@@ -93,6 +93,14 @@ export default {
     text-align: center;
     background-color: #043927;
   }
+  .alert {
+    border: 1px solid #f0fff8;
+    box-shadow: 0 0 10px #00ff00;
+    margin: 0.5em;
+    padding: 0.5em;
+  }
+  /* .alert-info {
+  } */
   .model-photo {
     border-radius: 10px;
     border: 1px solid #f0fff8;
@@ -150,6 +158,8 @@ export default {
   }
   ul {
     list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
 </style>
