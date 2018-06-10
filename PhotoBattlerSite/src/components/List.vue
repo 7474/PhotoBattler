@@ -50,6 +50,7 @@ export default {
         })
         .catch(error => {
           console.error(error)
+          _this.$root.noticeError('データの取得に失敗しました。')
           _this.loading = false
         })
     }

@@ -104,6 +104,7 @@ export default {
         })
         .catch(error => {
           console.error(error)
+          _this.$root.noticeError('アップロードに失敗しました。')
           _this.loading = false
         })
     },

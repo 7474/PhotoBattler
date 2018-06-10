@@ -12,17 +12,20 @@
       <p><router-link to="/siteinfo">Caution</router-link></p>
       <p>© 2018 <a href="https://twitter.com/koudenpa">@koudenpa</a></p>
     </footer>
+    <messages :messages="$root.messages"></messages>
   </div>
 </template>
 
 <script>
 import User from './components/User.vue'
 import AppMenu from './components/Menu.vue'
+import Messages from './components/Messages.vue'
 export default {
   name: 'App',
   components: {
     'User': User,
-    'AppMenu': AppMenu
+    'AppMenu': AppMenu,
+    'Messages': Messages
   },
   metaInfo: {
     title: 'Photo Battler',

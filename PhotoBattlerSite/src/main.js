@@ -73,11 +73,34 @@ Vue.use(Meta)
 /* eslint-disable no-new */
 let vm = new Vue({
   el: '#app',
+  components: { App },
+  template: '<App/>',
   router,
   data: {
     env: process.env,
-    state: state
+    state: state,
+    messages: []
   },
-  components: { App },
-  template: '<App/>'
+  methods: {
+    noticeError (message) {
+      console.log('noticeError: ' + message)
+      this.removeNotice(message)
+      this.messages.push({
+        type: 'error',
+        message: message
+      })
+    },
+    noticeInfo (message) {
+      console.log('noticeInfo: ' + message)
+      this.removeNotice(message)
+      this.messages.push({
+        type: 'info',
+        message: message
+      })
+    },
+    removeNotice (message) {
+      console.log('removeNotice: ' + message)
+      this.messages = this.messages.filter((x) => x.message !== message)
+    }
+  }
 })
