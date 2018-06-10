@@ -37,7 +37,8 @@
       </div>
     </div>
     <div>
-      <button type="button" v-on:click="upload">Upload</button>
+      <button v-show="!loading" type="button" v-on:click="upload">Upload</button>
+      <i v-show="loading" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
     </div>
     <div>
       <img v-show="selectedFile" class="model-photo" :src="imageData"/>
@@ -62,7 +63,8 @@ export default {
       inputAttributes: [],
       selectedFile: null,
       imageData: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
-      modelName: null
+      modelName: null,
+      loading: false
     }
   },
   computed: {
@@ -92,14 +94,17 @@ export default {
       let image = this.imageData
       let tags = [].concat(this.inputCategory, this.inputItem, this.inputAttributes).filter(x => !!x)
       let modelName = this.modelName
+      _this.loading = true
       window.api
         .imagesUpload(image, tags, modelName)
         .then(response => {
           console.log(response)
           _this.$router.push('/display/' + response.data.name)
+          _this.loading = false
         })
         .catch(error => {
           console.error(error)
+          _this.loading = false
         })
     },
     detectFile (e) {

@@ -16,7 +16,8 @@
       </li>
     </ul>
     <div class="next">
-      <a href="#" v-on:click.prevent="next()">Next</a>
+      <a v-show="!loading" href="#" v-on:click.prevent="next()">Next</a>
+      <i v-show="loading" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
     </div>
   </div>
 </template>
@@ -27,7 +28,8 @@ export default {
   data () {
     return {
       current: null,
-      list: []
+      list: [],
+      loading: false
     }
   },
   computed: {
@@ -37,15 +39,18 @@ export default {
   methods: {
     next () {
       let _this = this
+      _this.loading = true
       window.api
         .imagesPredictedList(this.current)
         .then(response => {
           console.log(response)
           _this.current = response.data.endName
           _this.list = response.data.list
+          _this.loading = false
         })
         .catch(error => {
           console.error(error)
+          _this.loading = false
         })
     }
   },
