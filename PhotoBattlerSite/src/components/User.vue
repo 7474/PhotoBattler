@@ -19,7 +19,7 @@ export default {
       return this.$root.state.isAuthenticated
     },
     zumo () {
-      return this.$root.state.isAuthenticated
+      return this.$root.state.zumo
     }
   },
   watch: {
