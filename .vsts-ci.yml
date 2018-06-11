@@ -1,0 +1,45 @@
+resources:
+- repo: self
+queue:
+  name: Hosted
+  demands: 
+  - npm
+  - azureps
+
+
+steps:
+- task: Npm@1
+  displayName: npm install
+  inputs:
+    workingDir: PhotoBattlerSite
+    verbose: false
+
+- task: Npm@1
+  displayName: npm run build
+  inputs:
+    command: custom
+    workingDir: PhotoBattlerSite
+    verbose: false
+    customCommand: 'run build'
+
+- task: AzureFileCopy@1
+  displayName: AzureBlob File Copy
+  inputs:
+    SourcePath: 'PhotoBattlerSite/wwwroot'
+    azureSubscription: 'koudenpa-sandbox (902c2f70-8e50-4d9b-a2b2-4c285c48aad7)'
+    Destination: AzureBlob
+    storage: photobattler
+    ContainerName: 'photo-battler '
+    AdditionalArguments: |
+     /SetContentType
+     
+
+- task: fabienlavocat.FabienLavocat-PurgeAzureCDNEndpoint.PurgeAzureCDNEndpoint.PurgeAzureCDNEndpoint@1
+  displayName: Purge Azure CDN Endpoint
+  inputs:
+    ConnectedServiceNameSelector: ConnectedServiceNameARM
+    ConnectedServiceNameARM: 'koudenpa-sandbox (902c2f70-8e50-4d9b-a2b2-4c285c48aad7)'
+    ResourceGroupName: 'photo-battler'
+    EndpointName: 'photo-battler'
+    ProfileName: 'photo-battler'
+

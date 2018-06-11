@@ -7,6 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoBattlerFunctionApp", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhotoBattlerSite", "PhotoBattlerSite\PhotoBattlerSite.csproj", "{D198C60B-8D55-4206-A2CA-F3B08FD7A2FA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B23D1938-846A-4D71-BDE3-94C05D3EF784}"
+	ProjectSection(SolutionItems) = preProject
+		.vsts-ci.yml = .vsts-ci.yml
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
