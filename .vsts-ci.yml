@@ -34,8 +34,9 @@ steps:
     AdditionalArguments: |
      /SetContentType
      
-
-- task: fabienlavocat.FabienLavocat-PurgeAzureCDNEndpoint.PurgeAzureCDNEndpoint.PurgeAzureCDNEndpoint@1
+# CONTRIBUTION_IDENTIFIER ‚ğÈ—ª‚µ‚Ä‚à‹@”\‚·‚é‚à‚Ì‚©Œ©‚Ä‚İ‚éB
+#- task: fabienlavocat.FabienLavocat-PurgeAzureCDNEndpoint.PurgeAzureCDNEndpoint.PurgeAzureCDNEndpoint@1
+- task: PurgeAzureCDNEndpoint@1
   displayName: Purge Azure CDN Endpoint
   inputs:
     ConnectedServiceNameSelector: ConnectedServiceNameARM
