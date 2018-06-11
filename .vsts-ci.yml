@@ -5,7 +5,8 @@ queue:
   demands: 
   - npm
   - azureps
-
+trigger:
+- master
 
 steps:
 - task: Npm@1
