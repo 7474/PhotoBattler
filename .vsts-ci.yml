@@ -6,7 +6,7 @@ queue:
   - npm
   - azureps
 trigger:
-- master
+- release/front
 
 steps:
 - task: Npm@1
