@@ -53,7 +53,7 @@ namespace PhotoBattlerFunctionApp
                 new
                 {
                     isAuthenticated = principal.Identity.IsAuthenticated,
-                    identity = user
+                    identity = user as IUser
                 });
         }
 
