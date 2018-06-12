@@ -11,23 +11,35 @@ using TinyOAuth1;
 using System;
 using PhotoBattlerFunctionApp.Helpers;
 using System.Net.Http.Headers;
+using PhotoBattlerFunctionApp.Models;
 
 namespace PhotoBattlerFunctionApp
 {
     public static class FunctionAuth
     {
         [FunctionName("AuthPrincipal")]
-        public static HttpResponseMessage GetkPrincipal([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "auth/principal")]HttpRequestMessage req, TraceWriter log)
+        public static HttpResponseMessage GetkPrincipal(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "auth/principal")]HttpRequestMessage req,
+            [Table("Users")]IQueryable<User> users,
+            TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
             var principal = Thread.CurrentPrincipal;
-            var user = new
+            if (!principal.Identity.IsAuthenticated)
             {
-                type = principal.Identity.AuthenticationType,
-                name = principal.Identity.Name
-            };
-            // ZUMOで認証するとTypeがFederation、NameがNullなので実態をみる
+                return req.CreateResponse(HttpStatusCode.OK,
+                    new
+                    {
+                        isAuthenticated = false
+                    });
+            }
+            // ZUMOで認証するとTypeがFederation、NameがNullなのでプロバイダ毎のインジェクションヘッダを見る
+            //var user = new
+            //{
+            //    type = principal.Identity.AuthenticationType,
+            //    name = principal.Identity.Name
+            //};
             log.Info(JsonConvert.SerializeObject(principal.Identity, new JsonSerializerSettings()
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,
@@ -35,6 +47,7 @@ namespace PhotoBattlerFunctionApp
             }));
             log.Info(JsonConvert.SerializeObject(
                 req.Headers.Select(x => $"{x.Key}: {string.Join(",", x.Value)}").ToList()));
+            User user = User.FindTwitterUser(req, users);
 
             return req.CreateResponse(HttpStatusCode.OK,
                 new
@@ -96,7 +109,6 @@ namespace PhotoBattlerFunctionApp
                 }
             }
 
-
             return req.CreateResponse(HttpStatusCode.OK,
                 new
                 {
@@ -104,9 +116,13 @@ namespace PhotoBattlerFunctionApp
                     oauthTokenSecret = oauthTokenSecret
                 });
         }
+
         [FunctionName("AuthTwitterAccessToken")]
         public static async Task<HttpResponseMessage> PostTwitterAccessTokenAsync(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth/twitter/access_token")]HttpRequestMessage req, TraceWriter log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "auth/twitter/access_token")]HttpRequestMessage req,
+            [Table("Users")]IQueryable<User> users,
+            [Table("Users")]ICollector<User> outUsers,
+            TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
 
@@ -151,7 +167,15 @@ namespace PhotoBattlerFunctionApp
                         break;
                 }
             }
-
+            var user = await GetTwitterAccountAsync(oauthToken, oauthTokenSecret);
+            if (users.Where(x => x.PartitionKey == "twitter" && x.RowKey == user.RowKey).ToList().Any())
+            {
+                // とりあえずアップデートは考えない。その辺考えるなら引数にバインドより普通にSDKでI/Oした方が良さそう
+            }
+            else
+            {
+                outUsers.Add(user);
+            }
 
             return req.CreateResponse(HttpStatusCode.OK,
                 new
@@ -159,6 +183,38 @@ namespace PhotoBattlerFunctionApp
                     oauthToken = oauthToken,
                     oauthTokenSecret = oauthTokenSecret
                 });
+        }
+
+        private static async Task<User> GetTwitterAccountAsync(string accessToken, string accessToeknSecret)
+        {
+            // https://developer.twitter.com/en/docs/accounts-and-users/manage-account-settings/api-reference/get-account-verify_credentials
+            var url = "https://api.twitter.com/1.1/account/verify_credentials.json";
+            var authorization = TwitterHelper.BuildGetAuthorizationHeader(url, accessToken, accessToeknSecret, twitterConfig.ConsumerKey, twitterConfig.ConsumerSecret);
+            var httpClient = new HttpClient();
+            var requestMsg = new HttpRequestMessage()
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(url),
+            };
+            requestMsg.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", authorization);
+            var response = await httpClient.SendAsync(requestMsg);
+            var responseText = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            dynamic json = JsonConvert.DeserializeObject(responseText);
+
+            return new User()
+            {
+                PartitionKey = "twitter",
+                RowKey = json.id_str,
+                Type = "twitter",
+                Name = json.screen_name,
+                ExtraInfo = responseText
+            };
         }
     }
 }

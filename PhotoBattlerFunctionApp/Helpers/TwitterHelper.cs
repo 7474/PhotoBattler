@@ -116,5 +116,31 @@ namespace PhotoBattlerFunctionApp.Helpers
 
             return string.Join(", ", requestParameters);
         }
+        public static string BuildGetAuthorizationHeader(string url, string oauthToken, string oauthToeknSecret, string consumerKey, string consumerSecret, IEnumerable<string> options = null)
+        {
+            var nonce = GetNonce();
+            var timeStamp = GetTimeStamp();
+
+            var requestParameters = new List<string>
+            {
+                "oauth_nonce=" + nonce,
+                "oauth_token=" + oauthToken,
+                "oauth_signature_method=HMAC-SHA1",
+                "oauth_timestamp=" + timeStamp,
+                "oauth_consumer_key=" + consumerKey,
+                "oauth_version=1.0"
+            };
+            if (options != null)
+            {
+                requestParameters.AddRange(options);
+            }
+
+            var singatureBaseString = GetSignatureBaseString("GET", url, requestParameters);
+            var signature = GetSignature(singatureBaseString, consumerSecret, oauthToeknSecret);
+
+            requestParameters.Add("oauth_signature=" + Uri.EscapeDataString(signature));
+
+            return string.Join(", ", requestParameters);
+        }
     }
 }

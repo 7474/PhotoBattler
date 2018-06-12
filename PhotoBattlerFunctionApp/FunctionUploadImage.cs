@@ -60,6 +60,7 @@ namespace PhotoBattlerFunctionApp
         [FunctionName("ImageUpload")]
         public static async Task<HttpResponseMessage> ImageUpload(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "images/upload")]HttpRequestMessage req,
+            [Table("Users")]IQueryable<User> users,
             [Table("CreateImageFromUrls")] IQueryable<CreateImageFromUrlsEntity> imageUrls,
             [Queue("create-image-from-urls")]ICollector<CreateImageFromUrlsRequest> queueItems,
             [Table("CreateImageFromUrls")]ICollector<CreateImageFromUrlsEntity> outImageUrlTable,
@@ -88,7 +89,7 @@ namespace PhotoBattlerFunctionApp
             var projectId = Guid.Parse(CV_ProjectId);
 
             // collect user
-            var user = User.FromRequest(req, Thread.CurrentPrincipal);
+            var user = User.FromRequest(users, req, Thread.CurrentPrincipal);
             var iuser = user as IUser;
 
             // XXX ÇøÇ·ÇÒÇ∆ÇµÇΩåüèÿ

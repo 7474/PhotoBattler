@@ -138,25 +138,51 @@ namespace PhotoBattlerFunctionApp.Models
     }
     public class User : TableEntity, IUser
     {
-        public static User FromRequest(HttpRequestMessage req, IPrincipal principal)
+        public static User FindTwitterUser(HttpRequestMessage req, IQueryable<User> users)
+        {
+            var twitterToken = req.Headers.GetValues("X-MS-TOKEN-TWITTER-ACCESS-TOKEN").First();
+            // Tokenの先頭がIDなので使っているが相当ダーティ
+            var twitterId = twitterToken.Substring(0, twitterToken.IndexOf('-'));
+            var user = users.Where(x => x.PartitionKey == "twitter" && x.RowKey == twitterId).ToList().First();
+            return user;
+        }
+
+        public static User FromRequest(IQueryable<User> users, HttpRequestMessage req, IPrincipal principal)
         {
             // https://stackoverflow.com/questions/37582553/how-to-get-client-ip-address-in-azure-functions-c
             // インタフェースを堅くすると実際的に必要な要素にアクセスできなくて面倒くさい。
-            string clientIP = "*";
+            string clientIp = "*";
             try
             {
-                clientIP = ((HttpContextWrapper)req.Properties["MS_HttpContext"]).Request.UserHostAddress;
+                IEnumerable<string> headerValues;
+                if (req.Headers.TryGetValues("X-Forwarded-For", out headerValues) == true)
+                {
+                    var xForwardedFor = headerValues.FirstOrDefault();
+                    clientIp = xForwardedFor.Split(',').GetValue(0).ToString().Trim();
+                }
+                else
+                {
+                    if (req.Properties.ContainsKey("MS_HttpContext"))
+                    {
+                        clientIp = ((HttpContextWrapper)req.Properties["MS_HttpContext"]).Request.UserHostAddress;
+                    }
+                }
+                clientIp = ((HttpContextWrapper)req.Properties["MS_HttpContext"]).Request.UserHostAddress;
             }
             catch (Exception)
             {
                 // Ignore
             }
-            var type = principal.Identity.IsAuthenticated
-                ? principal.Identity.AuthenticationType
-                : "anonymous";
-            var name = principal.Identity.IsAuthenticated
-                ? principal.Identity.Name
-                : clientIP;
+            var type = "anonymous";
+            var name = clientIp;
+            if (principal.Identity.IsAuthenticated)
+            {
+                var user = FindTwitterUser(req, users);
+                if (user != null)
+                {
+                    return user;
+                }
+            }
             return new User()
             {
                 PartitionKey = type,
@@ -170,5 +196,6 @@ namespace PhotoBattlerFunctionApp.Models
         public string Type { get; set; }
         public string Name { get; set; }
         public bool Ban { get; set; }
+        public string ExtraInfo { get; set; }
     }
 }
