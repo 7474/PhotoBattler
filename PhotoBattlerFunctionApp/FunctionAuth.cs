@@ -12,6 +12,7 @@ using System;
 using PhotoBattlerFunctionApp.Helpers;
 using System.Net.Http.Headers;
 using PhotoBattlerFunctionApp.Models;
+using PhotoBattlerFunctionApp.Extensions;
 
 namespace PhotoBattlerFunctionApp
 {
@@ -28,7 +29,7 @@ namespace PhotoBattlerFunctionApp
             var principal = Thread.CurrentPrincipal;
             if (!principal.Identity.IsAuthenticated)
             {
-                return req.CreateResponse(HttpStatusCode.OK,
+                return req.CreateJsonResponse(HttpStatusCode.OK,
                     new
                     {
                         isAuthenticated = false
@@ -49,7 +50,7 @@ namespace PhotoBattlerFunctionApp
                 req.Headers.Select(x => $"{x.Key}: {string.Join(",", x.Value)}").ToList()));
             User user = User.FindTwitterUser(req, users);
 
-            return req.CreateResponse(HttpStatusCode.OK,
+            return req.CreateJsonResponse(HttpStatusCode.OK,
                 new
                 {
                     isAuthenticated = principal.Identity.IsAuthenticated,
@@ -88,7 +89,7 @@ namespace PhotoBattlerFunctionApp
             log.Info(responseText);
             if (!response.IsSuccessStatusCode)
             {
-                return req.CreateResponse(response.StatusCode, responseText);
+                return req.CreateJsonResponse(response.StatusCode, responseText);
             }
 
             string oauthToken = null;
@@ -109,7 +110,7 @@ namespace PhotoBattlerFunctionApp
                 }
             }
 
-            return req.CreateResponse(HttpStatusCode.OK,
+            return req.CreateJsonResponse(HttpStatusCode.OK,
                 new
                 {
                     oauthToken = oauthToken,
@@ -147,7 +148,7 @@ namespace PhotoBattlerFunctionApp
             log.Info(responseText);
             if (!response.IsSuccessStatusCode)
             {
-                return req.CreateResponse(response.StatusCode, responseText);
+                return req.CreateJsonResponse(response.StatusCode, responseText);
             }
 
             string oauthToken = null;
@@ -177,7 +178,7 @@ namespace PhotoBattlerFunctionApp
                 outUsers.Add(user);
             }
 
-            return req.CreateResponse(HttpStatusCode.OK,
+            return req.CreateJsonResponse(HttpStatusCode.OK,
                 new
                 {
                     oauthToken = oauthToken,

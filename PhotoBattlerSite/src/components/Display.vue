@@ -1,8 +1,8 @@
 <template>
   <div class="images-display">
     <div class="image-info">
-      <h1>{{ image.ModelName || name }}</h1>
-      <ModelOwner :owner="image.User"></ModelOwner>
+      <h1>{{ image.modelName || name }}</h1>
+      <ModelOwner :owner="image.user"></ModelOwner>
     </div>
     <div class="images-spec">
       <div class="image-container">
@@ -54,7 +54,7 @@ export default {
           console.log(response)
           _this.url = response.data.url
           _this.image = response.data.result
-          _this.info = response.data.result.Result
+          _this.info = response.data.result.result
           _this.predictionsQueue = _this.info.predictions
           _this.processPredictionsQueue()
         })
@@ -74,7 +74,7 @@ export default {
   },
   metaInfo () {
     return {
-      title: this.image.ModelName || this.name,
+      title: this.image.modelName || this.name,
       titleTemplate: '%s | Photo Battler',
       meta: [
         { name: 'twitter:card', content: 'summary' },

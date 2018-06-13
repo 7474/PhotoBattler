@@ -15,6 +15,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using PhotoBattlerFunctionApp.Extensions;
 using PhotoBattlerFunctionApp.Helpers;
 using PhotoBattlerFunctionApp.Logics;
 using PhotoBattlerFunctionApp.Models;
@@ -55,7 +56,7 @@ namespace PhotoBattlerFunctionApp
                     Name = x.Name
                 };
             });
-            return req.CreateResponse(HttpStatusCode.OK, tags);
+            return req.CreateJsonResponse(HttpStatusCode.OK, tags);
         }
         [FunctionName("ImageUpload")]
         public static async Task<HttpResponseMessage> ImageUpload(
@@ -142,7 +143,7 @@ namespace PhotoBattlerFunctionApp
             };
             outPredictedTable.Add(predicted);
 
-            return req.CreateResponse(HttpStatusCode.OK, new
+            return req.CreateJsonResponse(HttpStatusCode.OK, new
             {
                 name = blockBlob.Name,
                 url = url,
@@ -159,7 +160,7 @@ namespace PhotoBattlerFunctionApp
             var blobName = name;
             var info = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey == blobName).First();
 
-            return req.CreateResponse(HttpStatusCode.OK, ImageInfo.FromNameAndResult(blobName, info));
+            return req.CreateJsonResponse(HttpStatusCode.OK, ImageInfo.FromNameAndResult(blobName, info));
         }
 
 
@@ -177,7 +178,7 @@ namespace PhotoBattlerFunctionApp
             var listCount = 25;
             var infos = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey.CompareTo(startName) < 0).Take(listCount).ToList();
 
-            return req.CreateResponse(HttpStatusCode.OK, new
+            return req.CreateJsonResponse(HttpStatusCode.OK, new
             {
                 endName = infos.LastOrDefault()?.RowKey,
                 list = infos.Select(x => ImageInfo.FromNameAndResult(x.RowKey, x)).ToList()

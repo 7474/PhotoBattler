@@ -8,8 +8,8 @@
               <img class="image-thumbnail model-photo" :src="image.url" />
             </div>
             <div class="image-description">
-              <div>{{ image.result.ModelName || image.name }}</div>
-              <ModelOwner :owner="image.result.User"></ModelOwner>
+              <div>{{ image.result.modelName || image.name }}</div>
+              <ModelOwner :owner="image.result.user"></ModelOwner>
             </div>
           </div>
         </router-link>

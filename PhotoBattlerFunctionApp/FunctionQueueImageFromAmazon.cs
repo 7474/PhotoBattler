@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
 using PhotoBattlerFunctionApp.Helpers;
+using PhotoBattlerFunctionApp.Extensions;
 
 namespace PhotoBattlerFunctionApp
 {
@@ -112,7 +113,7 @@ namespace PhotoBattlerFunctionApp
             {
                 return req.CreateErrorResponse(HttpStatusCode.ServiceUnavailable, ex);
             }
-            return req.CreateResponse(HttpStatusCode.OK, new
+            return req.CreateJsonResponse(HttpStatusCode.OK, new
             {
                 imageCount = imageCount
             });

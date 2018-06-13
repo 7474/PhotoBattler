@@ -9,8 +9,8 @@
     <div class="imates-upload-tags">
       <select v-model="inputCategory" placeholder="Category">
         <option valule="">該当なし</option>
-        <option v-for="option in CategoryTags" v-bind:key="option.Name" v-bind:value="option.Name">
-          {{ option.Name }}
+        <option v-for="option in categoryTags" v-bind:key="option.name" v-bind:value="option.name">
+          {{ option.name }}
         </option>
       </select>
       <div>(Category)</div>
@@ -18,16 +18,16 @@
     <div class="imates-upload-tags">
       <select v-model="inputItem" placeholder="Base Model">
         <option valule="">該当なし</option>
-        <option v-for="option in ItemTags" v-bind:key="option.Name" v-bind:value="option.Name">
-          {{ option.Name }}
+        <option v-for="option in itemTags" v-bind:key="option.name" v-bind:value="option.name">
+          {{ option.name }}
         </option>
       </select>
       <div>(Base Model)</div>
     </div>
     <div class="imates-upload-tags">
       <select v-model="inputAttributes" multiple>
-        <option v-for="option in AttributeTags" v-bind:key="option.Name" v-bind:value="option.Name">
-          {{ option.Name }}
+        <option v-for="option in attributeTags" v-bind:key="option.name" v-bind:value="option.name">
+          {{ option.name }}
         </option>
       </select>
       <div>(Attributes)
@@ -74,14 +74,14 @@ export default {
     isAuthenticated () {
       return this.$root.state.isAuthenticated
     },
-    CategoryTags () {
-      return this.tags.filter(x => x.Category === 'Category')
+    categoryTags () {
+      return this.tags.filter(x => x.category === 'Category')
     },
-    ItemTags () {
-      return this.tags.filter(x => x.Category === 'Item')
+    itemTags () {
+      return this.tags.filter(x => x.category === 'Item')
     },
-    AttributeTags () {
-      return this.tags.filter(x => x.Category === 'Attribute')
+    attributeTags () {
+      return this.tags.filter(x => x.category === 'Attribute')
     }
   },
   methods: {

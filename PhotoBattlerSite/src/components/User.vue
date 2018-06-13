@@ -24,7 +24,11 @@ export default {
   },
   watch: {
     zumo () {
-      this.updateAuthInfo()
+      let _this = this
+      // XXX 初回認証直後はStorageTableのCollector処理が完了していない可能性があるため若干待ってからリクエストする。ダサ味。
+      setTimeout(() => {
+        this.updateAuthInfo()
+      }, 100)
     }
   },
   methods: {
