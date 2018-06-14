@@ -44,4 +44,5 @@ steps:
     ResourceGroupName: 'photo-battler'
     EndpointName: 'photo-battler'
     ProfileName: 'photo-battler'
-
+  continueOnError: true
+  timeoutInMinutes: 1

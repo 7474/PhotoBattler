@@ -16,6 +16,7 @@
     "jso": "^4.1.0",
     "oauth-1.0a": "^2.2.4",
     "oauthio-web": "^0.6.2",
+    "postscribe": "^2.0.8",
     "query-string": "^6.1.0",
     "vue": "^2.5.2",
     "vue-axios": "^2.1.1",
