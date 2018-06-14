@@ -64,6 +64,8 @@ namespace PhotoBattlerFunctionApp.Models
     /// PartitionKey: "Upload",
     /// RowKey: "Blob name"
     /// }
+    /// Blob nameはプレフィクスにlog tail patternを適用する。
+    /// https://docs.microsoft.com/ja-jp/azure/cosmos-db/table-storage-design-guide#log-tail-pattern
     /// </summary>
     public class CreateImageFromUrlsEntity : OwnedEntity
     {
