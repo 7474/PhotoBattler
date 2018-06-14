@@ -100,7 +100,9 @@ namespace PhotoBattlerFunctionApp
             // setup blob
             var storageAccountConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
             var containerName = "photo";
-            var blobName = DateTime.Now.Ticks + "-" + Guid.NewGuid().ToString() + "." + extension;
+            // https://docs.microsoft.com/ja-jp/azure/cosmos-db/table-storage-design-guide#log-tail-pattern
+            var invertedTicks = string.Format("{0:D19}", DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks);
+            var blobName = invertedTicks + "-" + Guid.NewGuid().ToString() + "." + extension;
 
             var storageAccount = CloudStorageAccount.Parse(storageAccountConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
@@ -173,10 +175,13 @@ namespace PhotoBattlerFunctionApp
             var startName = req.GetQueryNameValuePairs().Where(x => x.Key == "startName").FirstOrDefault().Value;
             if (string.IsNullOrWhiteSpace(startName))
             {
-                startName = "|";
+                startName = "0";
             }
-            var listCount = 25;
-            var infos = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey.CompareTo(startName) < 0).Take(listCount).ToList();
+            // https://docs.microsoft.com/ja-jp/azure/cosmos-db/table-storage-design-guide#log-tail-pattern
+            var listCount = 10;
+            var infos = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey.CompareTo(startName) > 0)
+                .Take(listCount)
+                .ToList();
 
             return req.CreateJsonResponse(HttpStatusCode.OK, new
             {
