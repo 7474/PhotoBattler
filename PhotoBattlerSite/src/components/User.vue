@@ -1,16 +1,23 @@
 <template>
   <div class="user-identity">
-    <div v-show="isAuthenticated">{{ name }}</div>
-    <div v-show="!isAuthenticated">
-      <button @click="authenticate('twitter')">auth Twitter</button>
+    <div v-show="!loading" type="button">
+      <div v-show="isAuthenticated">{{ name }}</div>
+      <div v-show="!isAuthenticated">
+        <button @click="authenticate('twitter')">auth Twitter</button>
+      </div>
     </div>
+    <i v-show="loading" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
   </div>
 </template>
 
 <script>
-
 export default {
   name: 'User',
+  data () {
+    return {
+      loading: false
+    }
+  },
   computed: {
     name () {
       return this.isAuthenticated ? this.$root.state.user.name : '-'
@@ -33,6 +40,8 @@ export default {
   },
   methods: {
     authenticate (provider) {
+      let _this = this
+      _this.loading = true
       // XXX twitter only
       let returnUrl = this.$root.env.baseUrl + location.pathname + location.hash
       window.api.authTwitterRequestToken(returnUrl)
@@ -42,19 +51,25 @@ export default {
         })
         .catch(error => {
           console.error(error)
+          _this.$root.noticeError('認証処理に失敗しました。')
+          _this.loading = false
         })
     },
     updateAuthInfo () {
       let _this = this
+      _this.loading = true
       window.api
         .getPrincipal()
         .then(response => {
           console.log(response)
           _this.$root.state.isAuthenticated = response.data.isAuthenticated
           _this.$root.state.user = response.data.identity
+          _this.loading = false
         })
         .catch(error => {
+          // ignore
           console.error(error)
+          _this.loading = false
         })
     }
   },
