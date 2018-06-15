@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import postscribe from 'postscribe'
 export default {
   name: 'Item',
   props: ['trackingId', 'asin'],
