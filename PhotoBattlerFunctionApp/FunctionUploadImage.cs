@@ -38,9 +38,12 @@ namespace PhotoBattlerFunctionApp
 
             var tags = existTags.Select(x =>
             {
+                // XXX æ—©ãã“ã†ã„ã†ã®ã‚„ã‚ã‚ˆã†
                 var categories = new string[]
                 {
                     "FA:G",
+                    "ãƒ¡ã‚¬ãƒŸãƒ‡ãƒã‚¤ã‚¹",
+                    "ãƒ¡ã‚¬ãƒŸ",
                     "HGUC",
                     "MG",
                     "RG"
@@ -93,7 +96,7 @@ namespace PhotoBattlerFunctionApp
             var user = User.FromRequest(users, req, Thread.CurrentPrincipal);
             var iuser = user as IUser;
 
-            // XXX ‚¿‚á‚ñ‚Æ‚µ‚½ŒŸØ
+            // XXX ã¡ã‚ƒã‚“ã¨ã—ãŸæ¤œè¨¼
             var existTags = await trainingApi.GetTagsAsync(projectId);
             tags = tags.Intersect(existTags.Select(x => x.Name)).ToList();
 
@@ -126,13 +129,13 @@ namespace PhotoBattlerFunctionApp
             log.Info($"after queue image data.");
 
             // predict image
-            // XXX ‚±‚Á‚¿‚àƒLƒ…[‚É‚µ‚½•û‚ª‚¢‚¢‚ñ‚¿‚á‚¤‚©
+            // XXX ã“ã£ã¡ã‚‚ã‚­ãƒ¥ãƒ¼ã«ã—ãŸæ–¹ãŒã„ã„ã‚“ã¡ã‚ƒã†ã‹
             // https://docs.microsoft.com/ja-jp/azure/cognitive-services/custom-vision-service/csharp-tutorial
             var imageUrl = new ImageUrl()
             {
                 Url = url
             };
-            // XXX Storage emurator ‚Å’Ê‚·‚È‚çNgrock“™‚ÌH•v‚ª•K—vB’P‚ÉDevelop—p‚ÌStorage Account‚ğæ‚Á‚Ä‚µ‚Ü‚Á‚½•û‚ªŠy‚©‚àB
+            // XXX Storage emurator ã§é€šã™ãªã‚‰Ngrockç­‰ã®å·¥å¤«ãŒå¿…è¦ã€‚å˜ã«Developç”¨ã®Storage Accountã‚’å–ã£ã¦ã—ã¾ã£ãŸæ–¹ãŒæ¥½ã‹ã‚‚ã€‚
             var predictResult = await predictionEndpoint.PredictImageUrlAsync(projectId, imageUrl);
             log.Info($"after prediction.");
             var predicted = new PredictedInfo()
