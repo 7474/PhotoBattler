@@ -40,16 +40,14 @@ if (parsedQueryString.oauth_token) {
         .then((response) => {
           console.log(response.data)
           let zumo = response.data.authenticationToken
-          axios.defaults.headers.common['X-ZUMO-AUTH'] = zumo
           if (vm) {
-            vm.state.zumo = zumo
+            vm.updateZumo(zumo)
           }
-          window.localStorage.setItem('zumo', zumo)
         })
         .catch((error) => {
           console.error(error)
           if (vm) {
-            vm.state.zumo = null
+            vm.updateZumo(null)
           }
         })
     })
@@ -82,6 +80,12 @@ let vm = new Vue({
     messages: []
   },
   methods: {
+    updateZumo (zumo) {
+      console.log('updateZumo')
+      axios.defaults.headers.common['X-ZUMO-AUTH'] = zumo
+      this.state.zumo = zumo
+      window.localStorage.setItem('zumo', zumo)
+    },
     noticeError (message) {
       console.log('noticeError: ' + message)
       this.removeNotice(message)
