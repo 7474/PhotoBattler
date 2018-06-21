@@ -1,9 +1,14 @@
 <template>
   <div class="user-identity">
-    <div v-show="!loading" type="button">
-      <div v-show="isAuthenticated">{{ name }}</div>
+    <div v-show="!loading">
+      <div v-show="isAuthenticated">
+        <a href="#" @click.prevent="usermenuVisible = !usermenuVisible">{{ name }}</a>
+        <div v-show="usermenuVisible" class="user-menu">
+          <button type="button" @click.prevent="logout()">logout</button>
+        </div>
+      </div>
       <div v-show="!isAuthenticated">
-        <button @click="authenticate('twitter')">auth Twitter</button>
+        <button type="button" @click.prevent="authenticate('twitter')">auth Twitter</button>
       </div>
     </div>
     <i v-show="loading" class="fa fa-spinner fa-spin fa-lg fa-fw"></i>
@@ -15,7 +20,8 @@ export default {
   name: 'User',
   data () {
     return {
-      loading: false
+      loading: false,
+      usermenuVisible: false
     }
   },
   computed: {
@@ -55,6 +61,10 @@ export default {
           _this.loading = false
         })
     },
+    logout () {
+      // TODO /.auth/logout
+      this.$root.updateZumo(null)
+    },
     updateAuthInfo () {
       let _this = this
       _this.loading = true
@@ -81,4 +91,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.user-menu {
+  position: fixed;
+  right: 0.5em;
+  top: 2em;
+}
 </style>
