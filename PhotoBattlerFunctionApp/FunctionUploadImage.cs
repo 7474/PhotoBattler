@@ -15,6 +15,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Newtonsoft.Json;
 using PhotoBattlerFunctionApp.Extensions;
 using PhotoBattlerFunctionApp.Helpers;
 using PhotoBattlerFunctionApp.Logics;
@@ -24,48 +25,11 @@ namespace PhotoBattlerFunctionApp
 {
     public static class FunctionUploadImage
     {
-        [FunctionName("MasterTags")]
-        public static async Task<HttpResponseMessage> Tags(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tags")]HttpRequestMessage req,
-            TraceWriter log)
-        {
-            var CV_ProjectId = Environment.GetEnvironmentVariable("CV_ProjectId");
-            var CV_TrainingKey = Environment.GetEnvironmentVariable("CV_TrainingKey");
-            var trainingApi = new TrainingApi() { ApiKey = CV_TrainingKey };
-            var projectId = Guid.Parse(CV_ProjectId);
-
-            var existTags = await trainingApi.GetTagsAsync(projectId);
-
-            var tags = existTags.Select(x =>
-            {
-                // XXX 早くこういうのやめよう
-                var categories = new string[]
-                {
-                    "FA:G",
-                    "メガミデバイス",
-                    "メガミ",
-                    "HGUC",
-                    "MG",
-                    "RG"
-                };
-                return new
-                {
-                    Category = categories.Contains(x.Name)
-                        ? "Category"
-                        : categories.Any(y => x.Name.StartsWith(y))
-                            ? "Item"
-                            : "Attribute",
-                    AttributeType = "None",
-                    Name = x.Name
-                };
-            });
-            return req.CreateJsonResponse(HttpStatusCode.OK, tags);
-        }
         [FunctionName("ImageUpload")]
         public static async Task<HttpResponseMessage> ImageUpload(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "images/upload")]HttpRequestMessage req,
             [Table("Users")]IQueryable<User> users,
-            [Table("CreateImageFromUrls")] IQueryable<CreateImageFromUrlsEntity> imageUrls,
+            [Table("CreateImageFromUrls")]IQueryable<CreateImageFromUrlsEntity> imageUrls,
             [Queue("create-image-from-urls")]ICollector<CreateImageFromUrlsRequest> queueItems,
             [Table("CreateImageFromUrls")]ICollector<CreateImageFromUrlsEntity> outImageUrlTable,
             [Table("PredictedInfo")]ICollector<PredictedInfo> outPredictedTable,
@@ -155,6 +119,44 @@ namespace PhotoBattlerFunctionApp
                 result = predictResult
             });
         }
+
+        [FunctionName("ImageAsin")]
+        public static HttpResponseMessage ImageAsin(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "images/asin/{name}")]HttpRequestMessage req,
+            string name,
+            [Table("Items")] IQueryable<Item> items,
+            [Table("PredictedInfo")] IQueryable<PredictedInfo> predictedInfo,
+            TraceWriter log)
+        {
+            var blobName = name;
+            var info = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey == blobName).First();
+
+            // XXX 逆インデックスのTableを作成する
+            var labels = info.Result.Predictions.ToDictionary(x => x.TagName, x => x.Probability);
+            log.Info(JsonConvert.SerializeObject(labels));
+
+            var asinItems = items
+                .Where(x => x.PartitionKey == "Amazon").ToList()
+                .Where(x => labels.Keys.Contains(x.Name)).Take(4).ToList();
+            log.Info(JsonConvert.SerializeObject(asinItems));
+
+            if (asinItems.Count == 0)
+            {
+                return req.CreateResponse(HttpStatusCode.NotFound);
+            }
+            else
+            {
+                return req.CreateJsonResponse(HttpStatusCode.OK,
+                    asinItems.Select(item =>
+                        new
+                        {
+                            asin = item.RowKey,
+                            name = item.Name,
+                            probability = labels[item.Name]
+                        }));
+            }
+        }
+
         [FunctionName("ImagePredicted")]
         public static HttpResponseMessage ImagePredicted(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "images/predicted/{name}")]HttpRequestMessage req,

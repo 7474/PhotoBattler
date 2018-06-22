@@ -28,6 +28,9 @@ export default class {
         modelName: paramModelName
       })
   }
+  imagesAsin (name) {
+    return Vue.axios.get('/images/asin/' + name)
+  }
   imagesPredicted (name) {
     return Vue.axios.get('/images/predicted/' + name)
   }
