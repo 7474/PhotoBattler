@@ -75,15 +75,15 @@ export default {
   metaInfo () {
     return {
       title: this.image.modelName || this.name,
-      titleTemplate: '%s | Photo Battler',
-      meta: [
-        { name: 'twitter:card', content: 'summary' },
-        // 男のハードコーディング
-        { name: 'twitter:site', content: '@kudenpa' },
-        // { name: 'twitter:title', content: (this.image.ModelName || this.name) + ' | Photo Battler' },
-        // { name: 'twitter:description', content: '' },
-        { name: 'twitter:image', content: this.url }
-      ]
+      titleTemplate: '%s | Photo Battler'
+      // meta: [
+      //   { name: 'twitter:card', content: 'summary' },
+      //   // 男のハードコーディング
+      //   { name: 'twitter:site', content: '@kudenpa' },
+      //   // { name: 'twitter:title', content: (this.image.ModelName || this.name) + ' | Photo Battler' },
+      //   // { name: 'twitter:description', content: '' },
+      //   { name: 'twitter:image', content: this.url }
+      // ]
     }
   }
 }

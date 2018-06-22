@@ -28,13 +28,13 @@ export default {
     'Messages': Messages
   },
   metaInfo: {
-    title: 'Photo Battler',
-    meta: [
-      { name: 'twitter:card', content: 'summary' },
-      // 男のハードコーディング
-      { name: 'twitter:site', content: '@kudenpa' },
-      { name: 'twitter:image', content: '/site/images/dream.png' }
-    ]
+    title: 'Photo Battler'
+    // meta: [
+    //   { name: 'twitter:card', content: 'summary' },
+    //   // 男のハードコーディング
+    //   { name: 'twitter:site', content: '@kudenpa' },
+    //   { name: 'twitter:image', content: '/site/images/dream.png' }
+    // ]
   }
 }
 </script>
@@ -69,12 +69,12 @@ export default {
   #header {
     margin: 0;
     padding: 0;
-    height: 3em;
+    min-height: 3em;
     display: flex;
     background-color: #043927;
   }
   #header .icon {
-    height: 100%;
+    height: 3em;
     flex: none;
   }
   #header .menu {
@@ -82,7 +82,7 @@ export default {
     flex: auto;
   }
   #header .user {
-    padding: 0.4em 0.8em;
+    padding: 0.4em 0.4em;
     flex: initial;
   }
   #contents {

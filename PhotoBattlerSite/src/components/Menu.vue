@@ -14,7 +14,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .menu a {
-  min-width: 6em;
+  width: 5em;
   text-align: center;
   display: inline-block;
   margin: auto 0.4em;
