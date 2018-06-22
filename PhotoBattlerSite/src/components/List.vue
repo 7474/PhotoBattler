@@ -2,17 +2,19 @@
   <div class="images-list">
     <ul class="image-list-container">
       <li v-for="image in list" v-bind:key="image.name">
-        <router-link  :to="'/display/' + image.name">
           <div class="image-list-item">
             <div class="image-container">
-              <img class="image-thumbnail model-photo" :src="image.url" />
+              <router-link  :to="'/display/' + image.name">
+                <img class="image-thumbnail model-photo" :src="image.url" />
+              </router-link>
             </div>
             <div class="image-description">
-              <div>{{ image.result.modelName || image.name }}</div>
+              <router-link  :to="'/display/' + image.name">
+                <div>{{ image.result.modelName || image.name }}</div>
+              </router-link>
               <ModelOwner :owner="image.result.user"></ModelOwner>
             </div>
           </div>
-        </router-link>
       </li>
     </ul>
     <div class="next">

@@ -1,7 +1,7 @@
 <template>
   <div class="model-owner">
-    <div v-if="owner" v-show="owner.Type == 'twitter'">
-      <a :href="'https://twitter.com/' + owner.name">@{{ owner.name }}</a>
+    <div v-if="owner" v-show="owner.type == 'twitter'">
+      By <a :href="'https://twitter.com/' + owner.name">@{{ owner.name }}</a>
     </div>
   </div>
 </template>
