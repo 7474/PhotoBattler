@@ -137,7 +137,8 @@ namespace PhotoBattlerFunctionApp
 
             var asinItems = items
                 .Where(x => x.PartitionKey == "Amazon").ToList()
-                .Where(x => labels.Keys.Contains(x.Name)).Take(4).ToList();
+                .Where(x => labels.Keys.Contains(x.Name))
+                .OrderByDescending(x => labels[x.Name]).Take(4).ToList();
             log.Info(JsonConvert.SerializeObject(asinItems));
 
             if (asinItems.Count == 0)
