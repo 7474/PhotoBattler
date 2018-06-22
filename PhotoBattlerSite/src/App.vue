@@ -118,6 +118,15 @@ export default {
   .model-photo-fade-enter, .model-photo-fade-leave-to {
     opacity: 0;
   }
+  .fade-enter-active {
+    transition: opacity .5s;
+  }
+  .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
+  }
   button, #app .menu a {
     background-color: transparent;
     border: 1px solid #f0fff8;

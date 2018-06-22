@@ -22,12 +22,25 @@
         </li>
       </ul>
     </div>
+    <transition name="fade">
+      <div v-show="predictionsQueue.length == 0 && predictions.length > 0" class="ad-list">
+        <div class="ad-item" v-for="item in adItems" v-bind:key="item.asin">
+          <div class="ad-item-p">{{ (item.probability * 100).toFixed(2) }}<span class="attribute-unit">%</span></div>
+          <div class="ad-item-n">{{ item.name }}</div>
+          <Item :trackingId="$root.env.amazon.trackingId" :asin="item.asin"></Item>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
+import Item from './amazon/Item.vue'
 export default {
   name: 'Display',
+  components: {
+    'Item': Item
+  },
   data () {
     return {
       name: null,
@@ -35,7 +48,8 @@ export default {
       image: {},
       info: {},
       predictions: [],
-      predictionsQueue: []
+      predictionsQueue: [],
+      adItems: []
     }
   },
   computed: {
@@ -57,6 +71,15 @@ export default {
           _this.info = response.data.result.result
           _this.predictionsQueue = _this.info.predictions
           _this.processPredictionsQueue()
+        })
+        .catch(error => {
+          console.error(error)
+        })
+      window.api
+        .imagesAsin(this.name)
+        .then(response => {
+          console.log(response)
+          _this.adItems = response.data
         })
         .catch(error => {
           console.error(error)
@@ -125,5 +148,20 @@ ul.image-attributes li {
 }
 .attribute-unit {
   font-size: 0.7em;
+}
+.ad-list {
+  margin-top: 2em;
+  display: flex;
+}
+.ad-item {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+.ad-item-p {
+  font-size: 2em;
+}
+.ad-item-n {
+
 }
 </style>
