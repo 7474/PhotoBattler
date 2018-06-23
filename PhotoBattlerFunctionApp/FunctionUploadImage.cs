@@ -20,6 +20,8 @@ using PhotoBattlerFunctionApp.Extensions;
 using PhotoBattlerFunctionApp.Helpers;
 using PhotoBattlerFunctionApp.Logics;
 using PhotoBattlerFunctionApp.Models;
+using ImageResizer.ExtensionMethods;
+using ImageResizer;
 
 namespace PhotoBattlerFunctionApp
 {
@@ -65,24 +67,41 @@ namespace PhotoBattlerFunctionApp
             tags = tags.Intersect(existTags.Select(x => x.Name)).ToList();
 
             // setup blob
-            var storageAccountConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
-            var containerName = "photo";
             // https://docs.microsoft.com/ja-jp/azure/cosmos-db/table-storage-design-guide#log-tail-pattern
             var invertedTicks = string.Format("{0:D19}", DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks);
             var blobName = invertedTicks + "-" + Guid.NewGuid().ToString() + "." + extension;
 
-            var storageAccount = CloudStorageAccount.Parse(storageAccountConnectionString);
-            var blobClient = storageAccount.CreateCloudBlobClient();
-            var container = blobClient.GetContainerReference(containerName);
-            var blockBlob = container.GetBlockBlobReference(blobName);
+            var blockBlob = CommonHelper.PhotoBlobReference(blobName);
+            var blockBlobThumbnail = CommonHelper.PhotoThumbnailBlobReference(blobName);
 
             var url = blockBlob.Uri.ToString();
             var source = "Upload";
             var key = blockBlob.Name;
             log.Info($"pre upload. blobUri={url}");
 
+            // normalize image
+            var normalizedImage = new MemoryStream();
+            var thumbnailImage = new MemoryStream();
+            ImageBuilder.Current.Build(new ImageJob(new MemoryStream(image), normalizedImage, new Instructions()
+            {
+                Width = 1920,
+                Height = 1920,
+                Mode = FitMode.Max,
+                Scale = ScaleMode.DownscaleOnly
+            }));
+            ImageBuilder.Current.Build(new ImageJob(new MemoryStream(image), thumbnailImage, new Instructions()
+            {
+                Width = 256,
+                Height = 256,
+                Mode = FitMode.Crop,
+                Scale = ScaleMode.Both
+            }));
+
             // upload image
-            await blockBlob.UploadFromByteArrayAsync(image, 0, image.Length);
+            normalizedImage.Position = 0;
+            thumbnailImage.Position = 0;
+            await blockBlob.UploadFromStreamAsync(normalizedImage);
+            await blockBlobThumbnail.UploadFromStreamAsync(thumbnailImage);
             log.Info($"after upload.");
 
             // queue image
@@ -204,12 +223,14 @@ namespace PhotoBattlerFunctionApp
                 {
                     name = name,
                     url = CommonHelper.PhotoBlobReference(name)?.Uri.ToString(),
+                    thumbnailUrl = CommonHelper.PhotoThumbnailBlobReference(name)?.Uri.ToString(),
                     result = result
                 };
             }
 
             public string name { get; set; }
             public string url { get; set; }
+            public string thumbnailUrl { get; set; }
             public PredictedInfo result { get; set; }
         }
     }

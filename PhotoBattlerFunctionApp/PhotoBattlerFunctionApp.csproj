@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>    
     <PackageReference Include="FubarCoder.RestSharp.Portable.OAuth1" Version="4.0.8" />    
+    <PackageReference Include="ImageResizer" Version="4.2.5" />    
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction" Version="0.10.0-preview" />    
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training" Version="0.10.0-preview" />    
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.13" />    
