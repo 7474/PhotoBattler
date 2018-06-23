@@ -4,14 +4,16 @@
       <li v-for="image in list" v-bind:key="image.name">
           <div class="image-list-item">
             <div class="image-container">
-              <router-link  :to="'/display/' + image.name">
+              <a :href="'#/display/' + image.name"
+                v-on:click="selectItem($event, image, '/display/' + image.name)">
                 <img class="image-thumbnail model-photo" :src="image.url" />
-              </router-link>
+              </a>
             </div>
             <div class="image-description">
-              <router-link  :to="'/display/' + image.name">
+              <a :href="'#/display/' + image.name"
+                v-on:click="selectItem($event, image, '/display/' + image.name)">
                 <div>{{ image.result.modelName || image.name }}</div>
-              </router-link>
+              </a>
               <ModelOwner :owner="image.result.user"></ModelOwner>
             </div>
           </div>
@@ -55,6 +57,14 @@ export default {
           _this.$root.noticeError('データの取得に失敗しました。')
           _this.loading = false
         })
+    },
+    selectItem (event, item, path) {
+      event.item = item
+      this.$emit('select-item', event)
+      if (!event.defaultPrevented) {
+        event.preventDefault()
+        this.$router.push(path)
+      }
     }
   },
   mounted () {
