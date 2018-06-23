@@ -6,7 +6,7 @@
             <div class="image-container">
               <a :href="'#/display/' + image.name"
                 v-on:click="selectItem($event, image, '/display/' + image.name)">
-                <img class="image-thumbnail model-photo" :src="image.url" />
+                <img class="image-thumbnail model-photo" :src="image.thumbnailUrl" />
               </a>
             </div>
             <div class="image-description">
