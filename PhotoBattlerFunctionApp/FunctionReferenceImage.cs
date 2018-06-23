@@ -80,7 +80,7 @@ namespace PhotoBattlerFunctionApp
             var ogUrl = $"{edgeBase}/display/{blobName}";
             var ogImage = CommonHelper.PhotoBlobReference(blobName).Uri;
             var ogTitle = info.ModelName;
-            var ogDescription = string.Join(", ", info.Result.Predictions.Take(4).Select(x => $"{x.TagName}: {x.Probability * 100}"));
+            var ogDescription = string.Join(", ", info.Result.Predictions.Take(4).Select(x => $"{x.TagName}: {string.Format("{0:0.00}", x.Probability * 100)}%"));
 
             // XXX 熱いハードコーディング
             var body = $@"<!DOCTYPE html>
