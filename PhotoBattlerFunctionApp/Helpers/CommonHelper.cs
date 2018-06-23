@@ -36,5 +36,9 @@ namespace PhotoBattlerFunctionApp.Helpers
 
             return CreateBlobReference(storageAccountConnectionString, containerName, blobName);
         }
+        public static CloudBlockBlob PhotoThumbnailBlobReference(string blobName)
+        {
+            return PhotoBlobReference($"thumb/{blobName}");
+        }
     }
 }
