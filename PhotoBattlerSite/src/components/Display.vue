@@ -23,7 +23,7 @@
       </ul>
     </div>
     <transition name="fade">
-      <div v-show="predictionsQueue.length == 0 && predictions.length > 0" class="ad-list">
+      <div v-show="loaded" class="ad-list">
         <div class="ad-item" v-for="item in adItems" v-bind:key="item.asin">
           <div class="ad-item-p">{{ (item.probability * 100).toFixed(2) }}<span class="attribute-unit">%</span></div>
           <div class="ad-item-n">{{ item.name }}</div>
@@ -31,15 +31,23 @@
         </div>
       </div>
     </transition>
+    <transition name="fade">
+      <div v-show="loaded">
+        <h2>Select Opponent</h2>
+        <List v-on:select-item.prevent="selectVsModel"></List>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
+import List from './List'
 import Item from './amazon/Item.vue'
 export default {
   name: 'Display',
   components: {
-    'Item': Item
+    'Item': Item,
+    'List': List
   },
   data () {
     return {
@@ -53,6 +61,9 @@ export default {
     }
   },
   computed: {
+    loaded () {
+      return this.predictionsQueue.length === 0 && this.predictions.length > 0
+    }
   },
   watch: {
     name () {
@@ -90,6 +101,10 @@ export default {
       if (this.predictionsQueue.length > 0) {
         setTimeout(this.processPredictionsQueue, 100)
       }
+    },
+    selectVsModel (event) {
+      console.log(event.item)
+      this.$root.noticeInfo('準備中です。選択: ' + event.item.result.modelName)
     }
   },
   mounted () {

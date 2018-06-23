@@ -2,17 +2,21 @@
   <div class="images-list">
     <ul class="image-list-container">
       <li v-for="image in list" v-bind:key="image.name">
-        <router-link  :to="'/display/' + image.name">
           <div class="image-list-item">
             <div class="image-container">
-              <img class="image-thumbnail model-photo" :src="image.url" />
+              <a :href="'#/display/' + image.name"
+                v-on:click="selectItem($event, image, '/display/' + image.name)">
+                <img class="image-thumbnail model-photo" :src="image.url" />
+              </a>
             </div>
             <div class="image-description">
-              <div>{{ image.result.modelName || image.name }}</div>
+              <a :href="'#/display/' + image.name"
+                v-on:click="selectItem($event, image, '/display/' + image.name)">
+                <div>{{ image.result.modelName || image.name }}</div>
+              </a>
               <ModelOwner :owner="image.result.user"></ModelOwner>
             </div>
           </div>
-        </router-link>
       </li>
     </ul>
     <div class="next">
@@ -53,6 +57,14 @@ export default {
           _this.$root.noticeError('データの取得に失敗しました。')
           _this.loading = false
         })
+    },
+    selectItem (event, item, path) {
+      event.item = item
+      this.$emit('select-item', event)
+      if (!event.defaultPrevented) {
+        event.preventDefault()
+        this.$router.push(path)
+      }
     }
   },
   mounted () {
