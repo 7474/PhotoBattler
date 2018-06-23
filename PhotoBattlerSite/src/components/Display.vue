@@ -23,11 +23,19 @@
       </ul>
     </div>
     <transition name="fade">
-      <div v-show="loaded" class="ad-list">
-        <div class="ad-item" v-for="item in adItems" v-bind:key="item.asin">
-          <div class="ad-item-p">{{ (item.probability * 100).toFixed(2) }}<span class="attribute-unit">%</span></div>
-          <div class="ad-item-n">{{ item.name }}</div>
-          <Item :trackingId="$root.env.amazon.trackingId" :asin="item.asin"></Item>
+      <div v-if="loaded"  class="sns">
+        <a href="https//twitter.com/share" class="twitter-share-button" :data-text="shareText" :data-url="shareUrl" data-lang="ja">Tweet</a>
+      </div>
+    </transition>
+    <transition name="fade">
+      <div v-show="loaded" class="ad-list-container">
+        <h2>Assumed Base Kit</h2>
+        <div class="ad-list">
+          <div class="ad-item" v-for="item in adItems" v-bind:key="item.asin">
+            <div class="ad-item-p">{{ (item.probability * 100).toFixed(2) }}<span class="attribute-unit">%</span></div>
+            <div class="ad-item-n">{{ item.name }}</div>
+            <Item :trackingId="$root.env.amazon.trackingId" :asin="item.asin"></Item>
+          </div>
         </div>
       </div>
     </transition>
@@ -63,11 +71,22 @@ export default {
   computed: {
     loaded () {
       return this.predictionsQueue.length === 0 && this.predictions.length > 0
+    },
+    shareUrl () {
+      return this.$root.env.apiBase + '/images/share/' + this.name
+    },
+    shareText () {
+      return ''
     }
   },
   watch: {
     name () {
       this.updateInfo()
+    },
+    loaded () {
+      this.$nextTick(() => {
+        window.twttr.widgets.load()
+      })
     }
   },
   methods: {
@@ -164,8 +183,12 @@ ul.image-attributes li {
 .attribute-unit {
   font-size: 0.7em;
 }
+.sns {
+  margin: 2em 1em 1em 1em;
+}
+.ad-list-container {
+}
 .ad-list {
-  margin-top: 2em;
   display: flex;
 }
 .ad-item {
