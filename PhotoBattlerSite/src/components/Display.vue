@@ -29,7 +29,7 @@
     </transition>
     <transition name="fade">
       <div v-show="loaded" class="ad-list-container">
-        <h2>Assumed Base Kit</h2>
+        <h2>Estimated Base Kit</h2>
         <div class="ad-list">
           <div class="ad-item" v-for="item in adItems" v-bind:key="item.asin">
             <div class="ad-item-p">{{ (item.probability * 100).toFixed(2) }}<span class="attribute-unit">%</span></div>
