@@ -40,78 +40,90 @@ namespace PhotoBattlerFunctionApp
             log.Info("C# HTTP trigger function processed a request.");
             var imageCount = 0;
 
-            try
+            dynamic data = await req.Content.ReadAsAsync<object>();
+            string asin = data.asin;
+            string name = data.name;
+            ICollection<string> tags = data.tags.ToObject<List<string>>();
+            log.Info($"asin={asin}, name={name}, tags={string.Join(",", tags)}");
+
+            var AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("PAAPI_ACCESS_KEY_ID");
+            var AWS_SECRET_KEY = Environment.GetEnvironmentVariable("PAAPI_SECRET_KEY");
+            var PAAPI_ASSOCIATE_TAG = Environment.GetEnvironmentVariable("PAAPI_ASSOCIATE_TAG");
+
+            var helper = new SignedRequestHelper(AWS_ACCESS_KEY_ID, AWS_SECRET_KEY, DESTINATION, PAAPI_ASSOCIATE_TAG);
+
+            IDictionary<string, string> r1 = new Dictionary<string, string>();
+            r1["Service"] = "AWSECommerceService";
+            //r1["Version"] = "2011-08-01";
+            r1["Operation"] = "ItemLookup";
+            r1["ItemId"] = asin;
+            r1["ResponseGroup"] = "Images";
+
+            IEnumerable<string> images;
+            var retryCount = 0;
+            var retryMax = 5;
+            while (true)
             {
-                dynamic data = await req.Content.ReadAsAsync<object>();
-                string asin = data.asin;
-                string name = data.name;
-                ICollection<string> tags = data.tags.ToObject<List<string>>();
-                log.Info($"asin={asin}, name={name}, tags={string.Join(",", tags)}");
-
-                var AWS_ACCESS_KEY_ID = Environment.GetEnvironmentVariable("PAAPI_ACCESS_KEY_ID");
-                var AWS_SECRET_KEY = Environment.GetEnvironmentVariable("PAAPI_SECRET_KEY");
-                var PAAPI_ASSOCIATE_TAG = Environment.GetEnvironmentVariable("PAAPI_ASSOCIATE_TAG");
-
-                var helper = new SignedRequestHelper(AWS_ACCESS_KEY_ID, AWS_SECRET_KEY, DESTINATION, PAAPI_ASSOCIATE_TAG);
-
-                IDictionary<string, string> r1 = new Dictionary<string, string>();
-                r1["Service"] = "AWSECommerceService";
-                //r1["Version"] = "2011-08-01";
-                r1["Operation"] = "ItemLookup";
-                r1["ItemId"] = asin;
-                r1["ResponseGroup"] = "Images";
-
-                var requestUrl = helper.Sign(r1);
-                log.Verbose($"requestUrl: {requestUrl}");
-
-                var images = Fetch(requestUrl);
-                images.ToList().ForEach((url) =>
+                try
                 {
-                    imageCount++;
-                    var rowKey = asin + CommonHelper.MD5Hash(url);
-                    var source = "Amazon";
-
-                    queueItems.Add(new CreateImageFromUrlsRequest()
+                    var requestUrl = helper.Sign(r1);
+                    log.Verbose($"requestUrl: {requestUrl}");
+                    images = Fetch(requestUrl);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    log.Warning(ex.Message);
+                    if (retryCount >= retryMax)
                     {
+                        throw;
+                    }
+                    retryCount++;
+                }
+            }
+
+            images.ToList().ForEach((url) =>
+            {
+                imageCount++;
+                var rowKey = asin + CommonHelper.MD5Hash(url);
+                var source = "Amazon";
+
+                queueItems.Add(new CreateImageFromUrlsRequest()
+                {
+                    Url = url,
+                    Tags = tags
+                });
+                // XXX Existチェックしたいだけなのだが
+                if (imageUrls.Where(y => y.PartitionKey == source && y.RowKey == rowKey).ToList().Count() == 0)
+                {
+                    outImageUrlTable.Add(new CreateImageFromUrlsEntity()
+                    {
+                        PartitionKey = source,
+                        RowKey = rowKey,
                         Url = url,
                         Tags = tags
                     });
-                    // XXX Existチェックしたいだけなのだが
-                    if (imageUrls.Where(y => y.PartitionKey == source && y.RowKey == rowKey).ToList().Count() == 0)
-                    {
-                        outImageUrlTable.Add(new CreateImageFromUrlsEntity()
-                        {
-                            PartitionKey = source,
-                            RowKey = rowKey,
-                            Url = url,
-                            Tags = tags
-                        });
-                        log.Info($"{rowKey} entry to CreateImageFromUrls.");
-                    }
-                    else
-                    {
-                        log.Info($"{rowKey} is exist.");
-                    }
-                });
-                if (items.Where(y => y.PartitionKey == "Amazon" && y.RowKey == asin).ToList().Count() == 0)
-                {
-                    outItemTable.Add(new Item()
-                    {
-                        PartitionKey = "Amazon",
-                        RowKey = asin,
-                        Name = name,
-                        Tags = tags
-                    });
-                    log.Info($"{asin} entry to Items.");
+                    log.Info($"{rowKey} entry to CreateImageFromUrls.");
                 }
                 else
                 {
-                    log.Info($"{asin} is exist.");
+                    log.Info($"{rowKey} is exist.");
                 }
-            }
-            catch (Amazon503Exception ex)
+            });
+            if (items.Where(y => y.PartitionKey == "Amazon" && y.RowKey == asin).ToList().Count() == 0)
             {
-                return req.CreateErrorResponse(HttpStatusCode.ServiceUnavailable, ex);
+                outItemTable.Add(new Item()
+                {
+                    PartitionKey = "Amazon",
+                    RowKey = asin,
+                    Name = name,
+                    Tags = tags
+                });
+                log.Info($"{asin} entry to Items.");
+            }
+            else
+            {
+                log.Info($"{asin} is exist.");
             }
             return req.CreateJsonResponse(HttpStatusCode.OK, new
             {
@@ -125,9 +137,9 @@ namespace PhotoBattlerFunctionApp
             {
                 WebRequest request = HttpWebRequest.Create(url);
                 WebResponse response = request.GetResponse();
-                if ((response as HttpWebResponse)?.StatusCode == HttpStatusCode.ServiceUnavailable)
+                if ((response as HttpWebResponse)?.StatusCode != HttpStatusCode.OK)
                 {
-                    throw new Amazon503Exception();
+                    throw new AmazonApiException($"Amazon API status code is {(response as HttpWebResponse)?.StatusCode}");
                 }
                 XmlDocument doc = new XmlDocument();
                 doc.Load(response.GetResponseStream());
@@ -156,8 +168,10 @@ namespace PhotoBattlerFunctionApp
             }
         }
 
-        class Amazon503Exception : ApplicationException
+        class AmazonApiException : ApplicationException
         {
+            public AmazonApiException() { }
+            public AmazonApiException(string message) : base(message) { }
         }
     }
 }
