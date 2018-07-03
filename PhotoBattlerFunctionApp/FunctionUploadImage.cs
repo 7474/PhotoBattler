@@ -134,7 +134,7 @@ namespace PhotoBattlerFunctionApp
             return req.CreateJsonResponse(HttpStatusCode.OK, new
             {
                 name = blockBlob.Name,
-                url = url,
+                url,
                 result = predictResult
             });
         }

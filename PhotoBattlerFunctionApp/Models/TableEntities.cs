@@ -156,8 +156,7 @@ namespace PhotoBattlerFunctionApp.Models
             string clientIp = "*";
             try
             {
-                IEnumerable<string> headerValues;
-                if (req.Headers.TryGetValues("X-Forwarded-For", out headerValues) == true)
+                if (req.Headers.TryGetValues("X-Forwarded-For", out IEnumerable<string> headerValues) == true)
                 {
                     var xForwardedFor = headerValues.FirstOrDefault();
                     clientIp = xForwardedFor.Split(',').GetValue(0).ToString().Trim();

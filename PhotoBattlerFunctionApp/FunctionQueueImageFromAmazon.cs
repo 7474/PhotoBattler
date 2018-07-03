@@ -52,12 +52,14 @@ namespace PhotoBattlerFunctionApp
 
             var helper = new SignedRequestHelper(AWS_ACCESS_KEY_ID, AWS_SECRET_KEY, DESTINATION, PAAPI_ASSOCIATE_TAG);
 
-            IDictionary<string, string> r1 = new Dictionary<string, string>();
-            r1["Service"] = "AWSECommerceService";
-            //r1["Version"] = "2011-08-01";
-            r1["Operation"] = "ItemLookup";
-            r1["ItemId"] = asin;
-            r1["ResponseGroup"] = "Images";
+            IDictionary<string, string> r1 = new Dictionary<string, string>
+            {
+                ["Service"] = "AWSECommerceService",
+                //r1["Version"] = "2011-08-01";
+                ["Operation"] = "ItemLookup",
+                ["ItemId"] = asin,
+                ["ResponseGroup"] = "Images"
+            };
 
             IEnumerable<string> images;
             var retryCount = 0;
@@ -127,7 +129,7 @@ namespace PhotoBattlerFunctionApp
             }
             return req.CreateJsonResponse(HttpStatusCode.OK, new
             {
-                imageCount = imageCount
+                imageCount
             });
         }
 

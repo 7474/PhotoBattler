@@ -56,7 +56,7 @@ namespace PhotoBattlerFunctionApp
                             ? "Item"
                             : "Attribute",
                     AttributeType = "None",
-                    Name = x.Name
+                    x.Name
                 };
             });
             return req.CreateJsonResponse(HttpStatusCode.OK, tags);
