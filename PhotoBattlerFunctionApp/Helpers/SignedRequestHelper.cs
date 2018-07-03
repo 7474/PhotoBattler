@@ -29,10 +29,10 @@ namespace AmazonProductAdvtApi
 {
     class SignedRequestHelper
     {
-        private string endPoint;
-        private string akid;
-        private string associateTag;
-        private byte[] secret;
+        private readonly string endPoint;
+        private readonly string akid;
+        private readonly string associateTag;
+        private readonly byte[] secret;
         private HMAC signer;
 
         private const string REQUEST_URI = "/onca/xml";
@@ -70,12 +70,13 @@ namespace AmazonProductAdvtApi
             // Use a SortedDictionary to get the parameters in naturual byte order, as
             // required by AWS.
             ParamComparer pc = new ParamComparer();
-            SortedDictionary<string, string> sortedMap = new SortedDictionary<string, string>(request, pc);
-
-            // Add the AWSAccessKeyId and Timestamp to the requests.
-            sortedMap["AWSAccessKeyId"] = this.akid;
-            sortedMap["Timestamp"] = this.GetTimestamp();
-            sortedMap["AssociateTag"] = this.associateTag;
+            SortedDictionary<string, string> sortedMap = new SortedDictionary<string, string>(request, pc)
+            {
+                // Add the AWSAccessKeyId and Timestamp to the requests.
+                ["AWSAccessKeyId"] = this.akid,
+                ["Timestamp"] = this.GetTimestamp(),
+                ["AssociateTag"] = this.associateTag
+            };
 
             // Get the canonical query string
             string canonicalQS = this.ConstructCanonicalQueryString(sortedMap);

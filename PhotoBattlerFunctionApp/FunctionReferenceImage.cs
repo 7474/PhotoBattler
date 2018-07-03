@@ -103,8 +103,10 @@ namespace PhotoBattlerFunctionApp
 </html>
 ";
 
-            var response = new HttpResponseMessage();
-            response.Content = new StringContent(body);
+            var response = new HttpResponseMessage
+            {
+                Content = new StringContent(body)
+            };
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
             return response;
         }
@@ -153,17 +155,17 @@ namespace PhotoBattlerFunctionApp
             {
                 return new ImageInfo()
                 {
-                    name = name,
-                    url = CommonHelper.PhotoBlobReference(name)?.Uri.ToString(),
-                    thumbnailUrl = CommonHelper.PhotoThumbnailBlobReference(name)?.Uri.ToString(),
-                    result = result
+                    Name = name,
+                    Url = CommonHelper.PhotoBlobReference(name)?.Uri.ToString(),
+                    ThumbnailUrl = CommonHelper.PhotoThumbnailBlobReference(name)?.Uri.ToString(),
+                    Result = result
                 };
             }
 
-            public string name { get; set; }
-            public string url { get; set; }
-            public string thumbnailUrl { get; set; }
-            public PredictedInfo result { get; set; }
+            public string Name { get; set; }
+            public string Url { get; set; }
+            public string ThumbnailUrl { get; set; }
+            public PredictedInfo Result { get; set; }
         }
     }
 }
