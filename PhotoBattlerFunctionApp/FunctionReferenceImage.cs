@@ -124,6 +124,21 @@ namespace PhotoBattlerFunctionApp
             return req.CreateJsonResponse(HttpStatusCode.OK, ImageInfo.FromNameAndResult(blobName, info));
         }
 
+        [FunctionName("ImageParameter")]
+        public static HttpResponseMessage ImageParameter(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "images/parameter/{name}")]HttpRequestMessage req,
+            string name,
+            [Table("PredictedInfo")] IQueryable<PredictedInfo> predictedInfo,
+            [Table("Tags")] IQueryable<Tag> tags,
+            TraceWriter log)
+        {
+            var blobName = name;
+            var info = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey == blobName).First();
+            var unit = BattleLogic.AnalyzeParameter(info, tags.ToList());
+            log.Info(JsonConvert.SerializeObject(unit));
+
+            return req.CreateJsonResponse(HttpStatusCode.OK, unit);
+        }
 
         [FunctionName("ImagePredictedList")]
         public static HttpResponseMessage ImagePredictedList(
