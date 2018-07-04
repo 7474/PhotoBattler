@@ -4,6 +4,21 @@
       <h1>{{ image.modelName || name }}</h1>
       <ModelOwner :owner="image.user"></ModelOwner>
     </div>
+    <div class="images-param">
+      <!-- XXX DL -->
+      <div class="element">
+        <div class="name">HP</div>
+        <div class="value">{{ parameter.hp }}</div>
+      </div>
+      <div class="element">
+        <div class="name">Attack</div>
+        <div class="value">{{ parameter.attack }}</div>
+      </div>
+      <div class="element">
+        <div class="name">Mobility</div>
+        <div class="value">{{ parameter.mobility }}</div>
+      </div>
+    </div>
     <div class="images-spec">
       <div class="image-container">
         <transition name="model-photo-fade">
@@ -63,6 +78,7 @@ export default {
       url: null,
       image: {},
       info: {},
+      parameter: {},
       predictions: [],
       predictionsQueue: [],
       adItems: []
@@ -101,6 +117,15 @@ export default {
           _this.info = response.data.result.result
           _this.predictionsQueue = _this.info.predictions
           _this.processPredictionsQueue()
+        })
+        .catch(error => {
+          console.error(error)
+        })
+      window.api
+        .imagesParameter(this.name)
+        .then(response => {
+          console.log(response)
+          _this.parameter = response.data
         })
         .catch(error => {
           console.error(error)
@@ -153,6 +178,21 @@ export default {
   flex-direction: column;
   max-width: 600px;
   margin: 1em auto;
+}
+.images-param {
+  display: flex;
+  flex-direction: row;
+}
+.images-param .element {
+  text-align: center;
+  min-width: 5em;
+  padding: 0.5em;
+}
+.images-param .element .value {
+  font-size: 1.6em;
+}
+.images-param .element .name {
+  font-size: 0.8em;
 }
 .images-spec {
   display: flex;

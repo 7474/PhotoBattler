@@ -109,6 +109,20 @@ namespace PhotoBattlerFunctionApp.Models
         }
     }
     /// <summary>
+    /// PartitionKey = Category.
+    /// RowKey = TagName MD5 Hash.
+    /// </summary>
+    public class Tag : TableEntity
+    {
+        public string TagName { get; set; }
+        public string Category { get; set; }
+        public string SubCategory { get; set; }
+        public bool Exclusion { get; set; }
+        public int HP { get; set; }
+        public int Attack { get; set; }
+        public int Mobility { get; set; }
+    }
+    /// <summary>
     /// Keyは CreateImageFromUrlsEntity と同一とする。
     /// </summary>
     public class PredictedInfo : OwnedEntity
@@ -124,6 +138,22 @@ namespace PhotoBattlerFunctionApp.Models
             set
             {
                 this.Result = JsonConvert.DeserializeObject<ImagePrediction>(value);
+            }
+        }
+    }
+    //
+    public class BattleResultInfo : TableEntity
+    {
+        public BattleResult Result { get; set; }
+        public string ResultJson
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(this.Result);
+            }
+            set
+            {
+                this.Result = JsonConvert.DeserializeObject<BattleResult>(value);
             }
         }
     }

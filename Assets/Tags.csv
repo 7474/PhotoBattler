@@ -1,0 +1,16 @@
+﻿PartitionKey,RowKey,TagName,Category,SubCategory,Exclusion,HP,Attack,Mobility
+Attribute,89ba36e29c85e8373b76d2947886a39e,軽装甲,Attribute,装甲,TRUE,-50,0,200
+Attribute,c7f674fc2f5944cf841f37b23b6e31fd,重装甲,Attribute,装甲,TRUE,200,0,-50
+Attribute,5e54572033201f755261b8ba47c20043,近接武装,Attribute,武装,,0,100,50
+Attribute,f4b5c86f3451742ca4763f60f18d8c38,射撃武装,Attribute,武装,,0,150,0
+Attribute,fe7a21767500b91dd2496c1ce2eb9f7a,砲撃武装,Attribute,武装,,0,200,-50
+Attribute,22fa33820b9f90ed0b7d2b5f6e396143,陸戦適応,Attribute,適応,,0,50,100
+Attribute,5c0eec2b5161ae9f7642377d7328d9e9,空戦適応,Attribute,適応,,0,100,50
+Attribute,cd370e0b7a07260abe69e77dd1d79753,海戦適応,Attribute,適応,,100,50,0
+Attribute,bd95ec0f6acdd8e339d4891f1d71db24,高機動,Attribute,機動,TRUE,0,0,150
+Attribute,8fd0d302fd0d6f692c3579521f41158c,低機動,Attribute,機動,TRUE,100,100,-50
+Attribute,82d2d46ff308f83e6c4b4c1da7e2c9cc,素体,Attribute,,,50,50,50
+Attribute,c91bd67fc8c1374e1f4c5fe2c4da0e43,隠密,Attribute,,,0,50,100
+Category,cb63b6bc462152da249416a29171ffb0,FA:G,Category,Category,TRUE,200,100,100
+Category,f082a91615b827a91c20fcaf1751aa54,HGUC,Category,Category,TRUE,200,100,100
+Category,b99c2067cbb83f6a737ed2db2d35ea9a,メガミデバイス,Category,Category,TRUE,200,100,100

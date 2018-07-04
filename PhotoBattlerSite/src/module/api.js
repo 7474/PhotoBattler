@@ -41,4 +41,17 @@ export default class {
       }
     })
   }
+  imagesParameter (name) {
+    return Vue.axios.get('/images/parameter/' + name)
+  }
+  battle (nameX, nameY) {
+    return Vue.axios.post('/battles',
+      {
+        nameX: nameX,
+        nameY: nameY
+      })
+  }
+  battleResult (battleId) {
+    return Vue.axios.get('/battles/results/' + battleId)
+  }
 }
