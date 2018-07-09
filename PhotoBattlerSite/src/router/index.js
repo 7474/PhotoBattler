@@ -5,6 +5,7 @@ import SiteInfo from '@/components/SiteInfo'
 import Upload from '@/components/Upload'
 import Display from '@/components/Display'
 import List from '@/components/List'
+import BattleResult from '@/components/battle/Result'
 
 Vue.use(Router)
 
@@ -34,6 +35,11 @@ export default new Router({
       path: '/list',
       name: 'List',
       component: List
+    },
+    {
+      path: '/battles/:battleId',
+      name: 'BattleResult',
+      component: BattleResult
     }
   ]
 })
