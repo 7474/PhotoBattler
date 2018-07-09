@@ -42,6 +42,7 @@ namespace PhotoBattlerFunctionApp.Models
         public BattleElement UnitY { get; set; }
         public BattleElement Attacker { get; set; }
         public string Message { get; set; }
+        public string Remark { get; set; }
         public bool IsEnd { get { return UnitX.HP == 0 || UnitY.HP == 0; } }
     }
 }

@@ -60,17 +60,26 @@
         <List v-on:select-item.prevent="selectVsModel"></List>
       </div>
     </transition>
+    <Modal v-if="confirm">
+      <div slot="header"></div>
+      <Confirm slot="body" :unitX="image" :unitY="target" @ok="selectVsModelOk" @cancel="cancel"></Confirm>
+      <div slot="footer"></div>
+    </Modal>
   </div>
 </template>
 
 <script>
 import List from './List'
 import Item from './amazon/Item.vue'
+import Confirm from './battle/Confirm.vue'
+import Modal from './common/Modal.vue'
 export default {
   name: 'Display',
   components: {
     'Item': Item,
-    'List': List
+    'List': List,
+    'Confirm': Confirm,
+    'Modal': Modal
   },
   data () {
     return {
@@ -81,7 +90,9 @@ export default {
       parameter: {},
       predictions: [],
       predictionsQueue: [],
-      adItems: []
+      adItems: [],
+      confirm: false,
+      target: null
     }
   },
   computed: {
@@ -148,8 +159,30 @@ export default {
     },
     selectVsModel (event) {
       console.log(event.item)
-      this.$root.noticeInfo('準備中です。選択: ' + event.item.result.modelName)
+      this.target = event.item.result
+      this.confirm = true
+      // this.$root.noticeInfo('準備中です。選択: ' + event.item.result.modelName)
+    },
+    selectVsModelOk () {
+      // let _this = this
+      // XXX 何故俺はRowKeyを返しているのだろうか？　辛い
+      console.log(this.image)
+      console.log(this.target)
+      window.api
+        .battle(this.image.rowKey, this.target.rowKey)
+        .then(response => {
+          console.log(response)
+          this.$router.push('/battles/' + response.data.resultId)
+        })
+        .catch(error => {
+          console.error(error)
+        })
+      this.confirm = false
+    },
+    cancel () {
+      this.confirm = false
     }
+
   },
   mounted () {
     this.name = this.$route.params.name

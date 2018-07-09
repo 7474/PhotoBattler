@@ -61,7 +61,8 @@ namespace PhotoBattlerFunctionApp.Logics
                 UnitX = unitX,
                 UnitY = unitY,
                 Winner = winner,
-                Loser = loser
+                Loser = loser,
+                Actions = actions
             };
         }
         private static BattleAction BattleAction(BattleElement unitX, BattleElement unitY, BattleElement attackUnit)
@@ -72,17 +73,19 @@ namespace PhotoBattlerFunctionApp.Logics
             var attacker = attackUnit == unitX ? newX : newY;
             var diffrencer = attacker == newX ? newY : newX;
             var hitRand = randomizer.NextDouble();
-            var hitRatio = (attacker.Mobility / diffrencer.Mobility) * hitRand;
+            var hitRatio = ((double)attacker.Mobility / (double)diffrencer.Mobility) * hitRand;
             var damage = Math.Max(10, (int)(attacker.Attack * Math.Min(1.0, hitRatio)));
             diffrencer.HP = Math.Max(0, diffrencer.HP - damage);
             var message = $"{attacker.Name} -> {diffrencer.Name} ... {damage} damage. remaining HP {diffrencer.HP}.";
+            var detailMessage = $"{hitRand} -> {hitRatio} * {attacker.Attack} -> {damage}";
 
             return new BattleAction()
             {
                 UnitX = newX,
                 UnitY = newY,
                 Attacker = attacker,
-                Message = message
+                Message = message,
+                Remark = detailMessage
             };
         }
     }
