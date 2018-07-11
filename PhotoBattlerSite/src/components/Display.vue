@@ -132,7 +132,7 @@ export default {
           _this.url = response.data.url
           _this.image = response.data.result
           _this.info = response.data.result.result
-          _this.predictionsQueue = _this.info.predictions
+          _this.predictionsQueue = _this.info.predictions.concat()
           _this.processPredictionsQueue()
         })
         .catch(error => {

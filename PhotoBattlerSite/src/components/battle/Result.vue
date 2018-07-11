@@ -97,7 +97,7 @@ export default {
           _this.currentX = response.data.result.unitX
           _this.currentY = response.data.result.unitY
           _this.result = response.data.result
-          _this.actionsQueue = response.data.result.actions
+          _this.actionsQueue = response.data.result.actions.concat()
           setTimeout(_this.processActionsQueue, 1000)
         })
         .catch(error => {
