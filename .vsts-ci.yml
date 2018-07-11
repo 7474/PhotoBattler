@@ -44,5 +44,7 @@ steps:
     ResourceGroupName: 'photo-battler'
     EndpointName: 'photo-battler'
     ProfileName: 'photo-battler'
+    # index.html 以外は内容のハッシュがファイル名となる
+    PurgeContent: '/index.html'
   continueOnError: true
   timeoutInMinutes: 1
