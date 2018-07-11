@@ -57,12 +57,20 @@ namespace PhotoBattlerFunctionApp
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "battles/results/{id}")]HttpRequestMessage req,
             string id,
             [Table("BattleResult")] IQueryable<BattleResultInfo> resultInfo,
+            [Table("PredictedInfo")] IQueryable<PredictedInfo> predictedInfo,
             TraceWriter log)
         {
             var result = resultInfo.Where(x => x.RowKey == id).First();
             log.Info(JsonConvert.SerializeObject(result));
+            var imageX = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey == result.Result.UnitX.PredictedInfoKey).First();
+            var imageY = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey == result.Result.UnitY.PredictedInfoKey).First();
 
-            return req.CreateJsonResponse(HttpStatusCode.OK, result.Result);
+            return req.CreateJsonResponse(HttpStatusCode.OK, new
+            {
+                imageX = ImageInfo.FromNameAndResult(imageX.RowKey, imageX),
+                imageY = ImageInfo.FromNameAndResult(imageY.RowKey, imageY),
+                result.Result
+            });
         }
     }
 }

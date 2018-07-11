@@ -163,24 +163,5 @@ namespace PhotoBattlerFunctionApp
                 list = infos.Select(x => ImageInfo.FromNameAndResult(x.RowKey, x)).ToList()
             });
         }
-
-        public class ImageInfo
-        {
-            public static ImageInfo FromNameAndResult(string name, PredictedInfo result)
-            {
-                return new ImageInfo()
-                {
-                    Name = name,
-                    Url = CommonHelper.PhotoBlobReference(name)?.Uri.ToString(),
-                    ThumbnailUrl = CommonHelper.PhotoThumbnailBlobReference(name)?.Uri.ToString(),
-                    Result = result
-                };
-            }
-
-            public string Name { get; set; }
-            public string Url { get; set; }
-            public string ThumbnailUrl { get; set; }
-            public PredictedInfo Result { get; set; }
-        }
     }
 }

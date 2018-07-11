@@ -30,6 +30,8 @@ namespace PhotoBattlerFunctionApp.Logics
 
             return new BattleUnit()
             {
+                Id = Guid.NewGuid(),
+                PredictedInfoKey = image.RowKey,
                 Name = image.ModelName,
                 HP = elements.Sum(x => x.HP),
                 Attack = elements.Sum(x => x.Attack),
@@ -51,7 +53,7 @@ namespace PhotoBattlerFunctionApp.Logics
                 action = BattleAction(
                     action.UnitX,
                     action.UnitY,
-                    action.Attacker == action.UnitX ? action.UnitY : action.UnitX);
+                    action.Attacker.IsSameElement(action.UnitX) ? action.UnitY : action.UnitX);
                 actions.Add(action);
             }
             var winner = action.UnitX.HP == 0 ? unitY : unitX;
@@ -69,9 +71,9 @@ namespace PhotoBattlerFunctionApp.Logics
         {
             var newX = new BattleElement().CopyFrom(unitX);
             var newY = new BattleElement().CopyFrom(unitY);
-            // XXX こういう比較できるんだっけ？
-            var attacker = attackUnit == unitX ? newX : newY;
-            var diffrencer = attacker == newX ? newY : newX;
+
+            var attacker = attackUnit.IsSameElement(unitX) ? newX : newY;
+            var diffrencer = attacker.IsSameElement(newX) ? newY : newX;
             var hitRand = randomizer.NextDouble();
             var hitRatio = ((double)attacker.Mobility / (double)diffrencer.Mobility) * hitRand;
             var damage = Math.Max(10, (int)(attacker.Attack * Math.Min(1.0, hitRatio)));
@@ -84,6 +86,8 @@ namespace PhotoBattlerFunctionApp.Logics
                 UnitX = newX,
                 UnitY = newY,
                 Attacker = attacker,
+                HitRatio = hitRatio,
+                Damage = damage,
                 Message = message,
                 Remark = detailMessage
             };
