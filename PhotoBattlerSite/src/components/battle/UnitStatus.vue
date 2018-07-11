@@ -6,15 +6,21 @@
     <div class="images-param">
       <div class="element">
         <div class="name">HP</div>
-        <div class="value">{{ unit.hp }}</div>
+        <div class="value"><ICountUp
+            :startVal="last.hp"
+            :endVal="current.hp"
+            :decimals="0"
+            :duration="0.5"
+            :options="{}"
+          /></div>
       </div>
       <div class="element">
         <div class="name">Attack</div>
-        <div class="value">{{ unit.attack }}</div>
+        <div class="value">{{ current.attack }}</div>
       </div>
       <div class="element">
         <div class="name">Mobility</div>
-        <div class="value">{{ unit.mobility }}</div>
+        <div class="value">{{ current.mobility }}</div>
       </div>
     </div>
   </div>
@@ -27,7 +33,21 @@ export default {
   components: {
     'Summary': Summary
   },
-  props: ['image', 'unit', 'current']
+  props: ['image', 'unit', 'current'],
+  data () {
+    return ({
+      last: {
+        hp: 0,
+        attack: 0,
+        mobility: 0
+      }
+    })
+  },
+  watch: {
+    current () {
+      this.last = this.current
+    }
+  }
 }
 </script>
 

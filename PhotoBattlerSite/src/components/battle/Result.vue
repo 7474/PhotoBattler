@@ -3,17 +3,17 @@
     <div v-if="loaded" class="battle-result-inner">
       <div class="battle-result-units">
         <div class="battle-result-unit-container">
-          <UnitStatus :image="imageX" :unit="result.unitX"></UnitStatus>
-          <div class="result"><span class="winner" v-show="isXWin">Winner</span></div>
+          <UnitStatus :image="imageX" :unit="result.unitX" :current="currentX"></UnitStatus>
+          <div class="result"><span class="winner" v-show="finished && isXWin">Winner</span></div>
         </div>
         <div class="battle-result-unit-container">
-          <UnitStatus :image="imageY" :unit="result.unitY"></UnitStatus>
-          <div class="result"><span class="winner" v-show="isYWin">Winner</span></div>
+          <UnitStatus :image="imageY" :unit="result.unitY" :current="currentY"></UnitStatus>
+          <div class="result"><span class="winner" v-show="finished && isYWin">Winner</span></div>
         </div>
       </div>
       <div class="battle-result-actions">
         <ul>
-          <li class="battle-result-action" v-for="action in result.actions" v-bind:key="action.message">
+          <li class="battle-result-action" v-for="action in actions" v-bind:key="action.message">
             {{ action.message }}
           </li>
         </ul>
@@ -36,7 +36,11 @@ export default {
       battleId: null,
       result: null,
       imageX: null,
-      imageY: null
+      imageY: null,
+      currentX: null,
+      currentY: null,
+      actions: [],
+      actionsQueue: []
     }
   },
   computed: {
@@ -44,7 +48,7 @@ export default {
       return !!this.result
     },
     finished () {
-      return true
+      return this.loaded && this.actionsQueue.length === 0 && this.actions.length > 0
     },
     shareUrl () {
       return this.$root.env.apiBase + '/battles/share/' + this.battleId
@@ -90,7 +94,11 @@ export default {
           console.log(response)
           _this.imageX = response.data.imageX
           _this.imageY = response.data.imageY
+          _this.currentX = response.data.result.unitX
+          _this.currentY = response.data.result.unitY
           _this.result = response.data.result
+          _this.actionsQueue = response.data.result.actions
+          setTimeout(_this.processActionsQueue, 1000)
         })
         .catch(error => {
           console.error(error)
@@ -105,6 +113,15 @@ export default {
       //   .catch(error => {
       //     console.error(error)
       //   })
+    },
+    processActionsQueue () {
+      let action = this.actionsQueue.shift()
+      this.actions.push(action)
+      this.currentX = action.unitX
+      this.currentY = action.unitY
+      if (this.actionsQueue.length > 0) {
+        setTimeout(this.processActionsQueue, 500)
+      }
     }
   },
   mounted () {
@@ -123,7 +140,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .battle-result-inner {
-  background-color: rgba(0, 0, 0, 0.6)
+  background-color: rgba(0, 0, 0, 0.6);
+  min-height: 100vh;
 }
 .battle-result-units {
   display: flex;
