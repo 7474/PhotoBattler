@@ -62,7 +62,7 @@
     </transition>
     <Modal v-if="confirm">
       <div slot="header"></div>
-      <Confirm slot="body" :unitX="image" :unitY="target" @ok="selectVsModelOk" @cancel="cancel"></Confirm>
+      <Confirm slot="body" :unitX="imageData" :unitY="targetData" @ok="selectVsModelOk" @cancel="cancel"></Confirm>
       <div slot="footer"></div>
     </Modal>
   </div>
@@ -92,7 +92,9 @@ export default {
       predictionsQueue: [],
       adItems: [],
       confirm: false,
-      target: null
+      target: null,
+      imageData: null,
+      targetData: null
     }
   },
   computed: {
@@ -114,6 +116,9 @@ export default {
       this.$nextTick(() => {
         window.twttr.widgets.load()
       })
+    },
+    $route (from, to) {
+      this.name = this.$route.params.name
     }
   },
   methods: {
@@ -123,10 +128,11 @@ export default {
         .imagesPredicted(this.name)
         .then(response => {
           console.log(response)
+          _this.imageData = response.data
           _this.url = response.data.url
           _this.image = response.data.result
           _this.info = response.data.result.result
-          _this.predictionsQueue = _this.info.predictions
+          _this.predictionsQueue = _this.info.predictions.concat()
           _this.processPredictionsQueue()
         })
         .catch(error => {
@@ -159,9 +165,9 @@ export default {
     },
     selectVsModel (event) {
       console.log(event.item)
+      this.targetData = event.item
       this.target = event.item.result
       this.confirm = true
-      // this.$root.noticeInfo('準備中です。選択: ' + event.item.result.modelName)
     },
     selectVsModelOk () {
       // let _this = this

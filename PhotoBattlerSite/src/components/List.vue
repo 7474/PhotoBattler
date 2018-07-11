@@ -2,21 +2,7 @@
   <div class="images-list">
     <ul class="image-list-container">
       <li v-for="image in list" v-bind:key="image.name">
-          <div class="image-list-item">
-            <div class="image-container">
-              <a :href="'#/display/' + image.name"
-                v-on:click="selectItem($event, image, '/display/' + image.name)">
-                <img class="image-thumbnail model-photo" :src="image.thumbnailUrl" />
-              </a>
-            </div>
-            <div class="image-description">
-              <a :href="'#/display/' + image.name"
-                v-on:click="selectItem($event, image, '/display/' + image.name)">
-                <div>{{ image.result.modelName || image.name }}</div>
-              </a>
-              <ModelOwner :owner="image.result.user"></ModelOwner>
-            </div>
-          </div>
+        <Summary :image="image" v-on:select-item="selectItem"></Summary>
       </li>
     </ul>
     <div class="next">
@@ -27,8 +13,12 @@
 </template>
 
 <script>
+import Summary from './model/Summary.vue'
 export default {
   name: 'List',
+  components: {
+    'Summary': Summary
+  },
   data () {
     return {
       current: null,
@@ -41,6 +31,9 @@ export default {
   watch: {
   },
   methods: {
+    selectItem (event) {
+      this.$emit('select-item', event)
+    },
     next () {
       let _this = this
       _this.loading = true
@@ -57,14 +50,6 @@ export default {
           _this.$root.noticeError('データの取得に失敗しました。')
           _this.loading = false
         })
-    },
-    selectItem (event, item, path) {
-      event.item = item
-      this.$emit('select-item', event)
-      if (!event.defaultPrevented) {
-        event.preventDefault()
-        this.$router.push(path)
-      }
     }
   },
   mounted () {
@@ -90,24 +75,6 @@ ul.image-list-container {
 ul.image-list-container li {
   padding: 0.2em;
   width: 280px;
-}
-.image-list-item {
-  display: flex;
-  margin: 0.4em;
-}
-.image-container {
-  width: 80px;
-  height: 80px;
-  flex: none;
-}
-.image-thumbnail {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.image-description {
-  padding: 0.2em 0.5em;
-  word-wrap: break-word;
 }
 .next {
   text-align: center;

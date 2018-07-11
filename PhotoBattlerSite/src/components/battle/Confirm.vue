@@ -1,18 +1,24 @@
 <template>
   <transition name="fade">
     <div class="battle-confirm">
-      <div>{{ unitX.modelName }}</div>
+      <Summary :image="unitX"></Summary>
       <div>VS</div>
-      <div>{{ unitY.modelName }}</div>
-      <button type="button" @click="ok">OK</button>
-      <button type="button" @click="cancel">Cancel</button>
+      <Summary :image="unitY"></Summary>
+      <div class="battle-confirm-buttons">
+        <button type="button" @click="ok">OK</button>
+        <button type="button" @click="cancel">Cancel</button>
+      </div>
     </div>
   </transition>
 </template>
 
 <script>
+import Summary from '../model/Summary.vue'
 export default {
   name: 'BattleConfirm',
+  components: {
+    'Summary': Summary
+  },
   props: ['unitX', 'unitY'],
   methods: {
     ok () {
@@ -27,5 +33,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.battle-confirm {
+  text-align: center;
+}
+.battle-confirm-buttons {
+  margin-top: 2em;
+}
+.battle-confirm-buttons button {
+  margin: 0.5em;
+  min-width: 4em;
+}
 </style>

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction.Models;
 using Microsoft.WindowsAzure.Storage.Table;
 using Newtonsoft.Json;
+using PhotoBattlerFunctionApp.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -140,6 +141,25 @@ namespace PhotoBattlerFunctionApp.Models
                 this.Result = JsonConvert.DeserializeObject<ImagePrediction>(value);
             }
         }
+    }
+    //
+    public class ImageInfo
+    {
+        public static ImageInfo FromNameAndResult(string name, PredictedInfo result)
+        {
+            return new ImageInfo()
+            {
+                Name = name,
+                Url = CommonHelper.PhotoBlobReference(name)?.Uri.ToString(),
+                ThumbnailUrl = CommonHelper.PhotoThumbnailBlobReference(name)?.Uri.ToString(),
+                Result = result
+            };
+        }
+
+        public string Name { get; set; }
+        public string Url { get; set; }
+        public string ThumbnailUrl { get; set; }
+        public PredictedInfo Result { get; set; }
     }
     //
     public class BattleResultInfo : TableEntity

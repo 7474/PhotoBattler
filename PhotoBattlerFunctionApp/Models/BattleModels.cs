@@ -8,6 +8,7 @@ namespace PhotoBattlerFunctionApp.Models
 {
     public class BattleElement
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public int HP { get; set; }
         public int Attack { get; set; }
@@ -16,15 +17,21 @@ namespace PhotoBattlerFunctionApp.Models
 
         public BattleElement CopyFrom(BattleElement source)
         {
+            Id = source.Id;
             Name = source.Name;
             HP = source.HP;
             Attack = source.Attack;
             Mobility = source.Mobility;
             return this;
         }
+        public bool IsSameElement(BattleElement target)
+        {
+            return this.Id == target.Id;
+        }
     }
     public class BattleUnit : BattleElement
     {
+        public string PredictedInfoKey { get; set; }
         public ICollection<string> Attributes { get; set; }
     }
     public class BattleResult
@@ -41,6 +48,8 @@ namespace PhotoBattlerFunctionApp.Models
         public BattleElement UnitX { get; set; }
         public BattleElement UnitY { get; set; }
         public BattleElement Attacker { get; set; }
+        public double HitRatio { get; set; }
+        public int Damage { get; set; }
         public string Message { get; set; }
         public string Remark { get; set; }
         public bool IsEnd { get { return UnitX.HP == 0 || UnitY.HP == 0; } }
