@@ -56,6 +56,13 @@ export default {
     shareText () {
       return ''
     },
+    title () {
+      if (this.loaded) {
+        return this.result.unitX.name + ' vs ' + this.result.unitY.name
+      } else {
+        return this.battleId
+      }
+    },
     isXWin () {
       return this.result.unitX.id === this.result.winner.id
     },
@@ -129,8 +136,7 @@ export default {
   },
   metaInfo () {
     return {
-      // TODO Fix
-      title: this.battleId,
+      title: this.title,
       titleTemplate: '%s | Photo Battler'
     }
   }
