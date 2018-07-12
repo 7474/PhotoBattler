@@ -2,16 +2,16 @@
   <div class="battle-result" v-bind:style="containerStyle">
     <div v-if="loaded" class="battle-result-inner">
       <div class="battle-result-units">
-        <div class="battle-result-unit-container">
+        <div class="battle-result-unit-container sub-window">
           <UnitStatus :image="imageX" :unit="result.unitX" :current="currentX"></UnitStatus>
           <div class="result"><span class="winner" v-show="finished && isXWin">Winner</span></div>
         </div>
-        <div class="battle-result-unit-container">
+        <div class="battle-result-unit-container sub-window">
           <UnitStatus :image="imageY" :unit="result.unitY" :current="currentY"></UnitStatus>
           <div class="result"><span class="winner" v-show="finished && isYWin">Winner</span></div>
         </div>
       </div>
-      <div class="battle-result-actions">
+      <div class="battle-result-actions sub-window">
         <ul>
           <li class="battle-result-action" v-for="action in actions" v-bind:key="action.message">
             {{ action.message }}
@@ -55,6 +55,13 @@ export default {
     },
     shareText () {
       return ''
+    },
+    title () {
+      if (this.loaded) {
+        return this.result.unitX.name + ' vs ' + this.result.unitY.name
+      } else {
+        return this.battleId
+      }
     },
     isXWin () {
       return this.result.unitX.id === this.result.winner.id
@@ -129,8 +136,7 @@ export default {
   },
   metaInfo () {
     return {
-      // TODO Fix
-      title: this.battleId,
+      title: this.title,
       titleTemplate: '%s | Photo Battler'
     }
   }
@@ -147,9 +153,12 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: space-around;
 }
 .battle-result-unit-container {
   flex: 1;
+  max-width: 20em;
+  margin: 1em 0;
 }
 .battle-result-units .result {
   height: 2em;
@@ -169,5 +178,13 @@ export default {
 }
 .battle-result-action {
   margin: 0.5em;
+}
+.sub-window {
+  /* background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid #f0fff8;
+  box-shadow: 0 0 10px #00ff00;
+  margin: 0.5em;
+  padding: 0.5em;
+  min-height: 8em; */
 }
 </style>
