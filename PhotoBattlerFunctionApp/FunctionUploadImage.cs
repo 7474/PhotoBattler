@@ -69,10 +69,12 @@ namespace PhotoBattlerFunctionApp
             // setup blob
             // https://docs.microsoft.com/ja-jp/azure/cosmos-db/table-storage-design-guide#log-tail-pattern
             var invertedTicks = string.Format("{0:D19}", DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks);
-            var blobName = invertedTicks + "-" + Guid.NewGuid().ToString() + "." + extension;
+            var blobName = invertedTicks + "-" + Guid.NewGuid().ToString();
 
             var blockBlob = CommonHelper.PhotoBlobReference(blobName);
             var blockBlobThumbnail = CommonHelper.PhotoThumbnailBlobReference(blobName);
+            blockBlob.Properties.ContentType = "image/jpeg";
+            blockBlobThumbnail.Properties.ContentType = "image/jpeg";
 
             var url = blockBlob.Uri.ToString();
             var source = "Upload";
