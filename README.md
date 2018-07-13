@@ -20,5 +20,3 @@ Photo Battler は [Azure Functionos](https://azure.microsoft.com/ja-jp/services/
 
 システムを構成するフロントエンドアプリケーションです。
 
-ASP.NET Coreのプロジェクトになっていますが、実態は Vue.js の静的アプリケーションです。
-
