@@ -164,6 +164,9 @@ namespace PhotoBattlerFunctionApp.Models
     //
     public class BattleResultInfo : TableEntity
     {
+        public bool RevFlag { get; set; }
+        public string ThumbnailUrlX { get; set; }
+        public string ThumbnailUrlY { get; set; }
         public BattleResult Result { get; set; }
         public string ResultJson
         {

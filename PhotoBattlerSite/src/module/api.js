@@ -54,4 +54,12 @@ export default class {
   battleResult (battleId) {
     return Vue.axios.get('/battles/results/' + battleId)
   }
+  battleResultList (startName, nameX) {
+    return Vue.axios.get('/battles/results', {
+      params: {
+        startName: startName || '',
+        nameX: nameX || ''
+      }
+    })
+  }
 }

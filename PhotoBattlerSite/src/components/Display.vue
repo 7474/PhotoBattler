@@ -56,8 +56,14 @@
     </transition>
     <transition name="fade">
       <div v-show="loaded">
-        <h2>Select Opponent</h2>
+        <h2>Select Battle Model</h2>
         <List v-on:select-item.prevent="selectVsModel"></List>
+      </div>
+    </transition>
+    <transition name="fade">
+      <div v-show="loaded">
+        <h2>Battles</h2>
+        <BattleList :name="name"></BattleList>
       </div>
     </transition>
     <Modal v-if="confirm">
@@ -72,6 +78,7 @@
 import List from './List'
 import Item from './amazon/Item.vue'
 import Confirm from './battle/Confirm.vue'
+import BattleList from './battle/List.vue'
 import Modal from './common/Modal.vue'
 export default {
   name: 'Display',
@@ -79,6 +86,7 @@ export default {
     'Item': Item,
     'List': List,
     'Confirm': Confirm,
+    'BattleList': BattleList,
     'Modal': Modal
   },
   data () {
