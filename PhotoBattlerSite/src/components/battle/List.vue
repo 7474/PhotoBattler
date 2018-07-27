@@ -1,8 +1,8 @@
 <template>
-  <div class="images-list">
-    <ul class="image-list-container">
-      <li v-for="image in list" v-bind:key="image.name">
-        <Summary :image="image" v-on:select-item="selectItem"></Summary>
+  <div class="battle-list">
+    <ul class="battle-list-container">
+      <li v-for="battle in list" v-bind:key="battle.name">
+        <Summary :battle="battle" v-on:select-item="selectItem"></Summary>
       </li>
     </ul>
     <div class="next">
@@ -13,12 +13,13 @@
 </template>
 
 <script>
-import Summary from './model/Summary.vue'
+import Summary from './Summary.vue'
 export default {
   name: 'List',
   components: {
     'Summary': Summary
   },
+  props: ['name'],
   data () {
     return {
       current: null,
@@ -38,7 +39,7 @@ export default {
       let _this = this
       _this.loading = true
       window.api
-        .imagesPredictedList(this.current)
+        .battleResultList(this.current, this.name)
         .then(response => {
           console.log(response)
           _this.current = response.data.endName
@@ -60,22 +61,23 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.images-list {
+.battle-list {
   display: flex;
   flex-direction: column;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
 }
-ul.image-list-container {
+ul.battle-list-container {
   margin: 0;
   padding: 0;
   display: inline-flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
 }
-ul.image-list-container li {
+ul.battle-list-container li {
   padding: 0.2em;
-  width: 280px;
+  width: 360px;
+  margin: 24px 12px;
 }
 .next {
   text-align: center;

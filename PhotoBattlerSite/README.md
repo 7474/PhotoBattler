@@ -1,6 +1,23 @@
-# 7
+# PhotoBattlerSite
 
-> y
+Photo Battlerを構成するフロントエンドアプリケーションです。
+
+ASP.NET Coreのプロジェクトになっていますが、実態は Vue.js の静的アプリケーションです。
+
+
+## CD
+
+[../.vsts-ci.yml](../.vsts-ci.yml) に基づいてVSTSのBuildでデプロイしています。
+
+
+## Local Execution
+
+[PhotoBattlerFunctionApp](../PhotoBattlerFunctionApp) をサーバサイドアプリケーションとして実行します。
+
+現状はCustom Visionとの接続は構成していないため、Uploadは失敗します。
+
+See https://github.com/7474/PhotoBattler/issueSee
+
 
 ## Build Setup
 

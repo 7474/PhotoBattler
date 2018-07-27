@@ -6,6 +6,7 @@ import Upload from '@/components/Upload'
 import Display from '@/components/Display'
 import List from '@/components/List'
 import BattleResult from '@/components/battle/Result'
+import BattleResultList from '@/components/battle/List'
 
 Vue.use(Router)
 
@@ -35,6 +36,11 @@ export default new Router({
       path: '/list',
       name: 'List',
       component: List
+    },
+    {
+      path: '/battles',
+      name: 'BattleResultList',
+      component: BattleResultList
     },
     {
       path: '/battles/:battleId',

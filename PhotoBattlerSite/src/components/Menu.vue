@@ -1,7 +1,8 @@
 <template>
   <div class="menu">
     <router-link to="/upload">Upload</router-link>
-    <router-link to="/list">List</router-link>
+    <router-link to="/list">Images</router-link>
+    <router-link to="/battles">Battles</router-link>
   </div>
 </template>
 

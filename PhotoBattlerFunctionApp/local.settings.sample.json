@@ -1,0 +1,22 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsDashboard": "",
+    "PAAPI_ACCESS_KEY_ID": "xxx",
+    "PAAPI_SECRET_KEY": "yyy",
+    "PAAPI_ASSOCIATE_TAG": "zzz",
+    "CV_ProjectId": "guid",
+    "CV_TrainingKey": "xxx",
+    "CV_PredictionKey": "yyy",
+    "TWITTER_CONSUMER_KEY": "xxx",
+    "TWITTER_CONSUMER_SECRET": "yyy",
+    "STATIC_SITE_ROUTE": "/site/",
+    "STATIC_SITE_PATH": "http://127.0.0.1:5841",
+    "EDGE_BASE_PATH": "https://photo-battler.azureedge.net/index.html#"
+  },
+  "Host": {
+    "LocalHttpPort": 7071,
+    "CORS": "http://127.0.0.1:5841,http://127.0.0.1:8080,http://localhost:8080"
+  }
+}
