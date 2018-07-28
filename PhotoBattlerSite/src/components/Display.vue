@@ -63,7 +63,7 @@
     <transition name="fade">
       <div v-show="loaded">
         <h2>Battles</h2>
-        <BattleList :name="name"></BattleList>
+        <BattleList v-if="name" :name="name"></BattleList>
       </div>
     </transition>
     <Modal v-if="confirm">
