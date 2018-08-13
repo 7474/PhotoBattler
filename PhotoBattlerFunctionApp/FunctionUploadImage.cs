@@ -22,6 +22,7 @@ using PhotoBattlerFunctionApp.Logics;
 using PhotoBattlerFunctionApp.Models;
 using ImageResizer.ExtensionMethods;
 using ImageResizer;
+using OpenCvSharp;
 
 namespace PhotoBattlerFunctionApp
 {
@@ -98,6 +99,93 @@ namespace PhotoBattlerFunctionApp
                 Mode = FitMode.Crop,
                 Scale = ScaleMode.Both
             }));
+            {
+                //lbpcascade_animeface.xml
+                //var haarCascade = new CascadeClassifier("haarcascade_frontalface_default.xml");
+                var haarCascade = new CascadeClassifier("lbpcascade_animeface.xml");
+                normalizedImage.Position = 0;
+                using (var faceMat = Mat.FromStream(normalizedImage.CopyToMemoryStream(), ImreadModes.AnyColor))
+                {
+                    var faces = haarCascade.DetectMultiScale(faceMat);
+                    var face = faces.First();
+                    log.Info(JsonConvert.SerializeObject(faces));
+                    // Face Rectangle
+                    //ImageBuilder.Current.Build(new ImageJob(normalizedImage.CopyToMemoryStream(), faceImage, new Instructions()
+                    //{
+                    //    Width = 256,
+                    //    Height = 256,
+                    //    Mode = FitMode.Crop,
+                    //    Scale = ScaleMode.Both,
+                    //    CropRectangle = new double[]
+                    //    {
+                    //        face.Left, face.Top, face.Right, face.Bottom
+                    //    }
+                    //}));
+
+                    var focusX = (face.Left + face.Right) / 2;
+                    var focusY = (face.Top + face.Bottom) / 2;
+
+                    //TopLeft = 1,
+                    //TopCenter = 2,
+                    //TopRight = 4,
+                    //MiddleLeft = 16,
+                    //MiddleCenter = 32,
+                    //MiddleRight = 64,
+                    //BottomLeft = 256,
+                    //BottomCenter = 512,
+                    //BottomRight = 1024
+                    // ダサいが9*9に収まるように処理する
+                    int xFactor = 0;
+                    if (faceMat.Width * 0.33 > focusX)
+                    {
+                        xFactor = 0;
+                    } else if(faceMat.Width * 0.67 < focusX)
+                    {
+                        xFactor = 2;
+                    } else {
+                        xFactor = 1;
+                    }
+                    int yFactor = 0;
+                    if (faceMat.Height * 0.33 > focusY)
+                    {
+                        yFactor = 1;
+                    }
+                    else if (faceMat.Height * 0.67 < focusY)
+                    {
+                        yFactor = 256;
+                    }
+                    else
+                    {
+                        yFactor = 16;
+                    }
+                    var ancher = (AnchorLocation)(yFactor << xFactor);
+
+                    var faceImage = new MemoryStream();
+                    normalizedImage.Position = 0;
+                    ImageBuilder.Current.Build(new ImageJob(normalizedImage.CopyToMemoryStream(), faceImage, new Instructions()
+                    {
+                        Width = 256,
+                        Height = 256,
+                        Mode = FitMode.Crop,
+                        Scale = ScaleMode.Both,
+                        Anchor = ancher
+                    }));
+                    var blockBlobFace = CommonHelper.PhotoThumbnailBlobReference(blobName + "-face");
+                    blockBlobFace.Properties.ContentType = "image/jpeg";
+                    faceImage.Position = 0;
+                    await blockBlobFace.UploadFromStreamAsync(faceImage);
+                }
+            }
+            //{
+            //    // http://imageresizing.net/docs/v4/install/non-web
+            //    var config = new ImageResizer.Configuration.Config();
+            //    new FacesPlugin().Install(config);
+            //    var facesPlugin = config.Plugins.Get<FacesPlugin>();
+            //    //var job = new ImageJob(new MemoryStream(image), new string[] { });
+            //    var settings = new NameValueCollection();
+            //    var faces = facesPlugin.GetFacesFromImage(new MemoryStream(image), settings);
+            //    log.Info(JsonConvert.SerializeObject(faces));
+            //}
 
             // upload image
             normalizedImage.Position = 0;
