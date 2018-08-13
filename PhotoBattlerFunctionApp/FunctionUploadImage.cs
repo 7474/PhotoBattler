@@ -36,7 +36,8 @@ namespace PhotoBattlerFunctionApp
             [Queue("create-image-from-urls")]ICollector<CreateImageFromUrlsRequest> queueItems,
             [Table("CreateImageFromUrls")]ICollector<CreateImageFromUrlsEntity> outImageUrlTable,
             [Table("PredictedInfo")]ICollector<PredictedInfo> outPredictedTable,
-            TraceWriter log)
+            TraceWriter log,
+            Microsoft.Azure.WebJobs.ExecutionContext context)
         {
             log.Info("C# HTTP trigger function processed a request.");
             // 実行パスの確認用
@@ -89,7 +90,7 @@ namespace PhotoBattlerFunctionApp
 
             // normalize image
             MemoryStream normalizedImage = NormalizeImage(image);
-            AnchorLocation anchor = DetectFocusAnchor(log, normalizedImage);
+            AnchorLocation anchor = DetectFocusAnchor(log, normalizedImage, context.FunctionAppDirectory);
             log.Info($"Anchor: {anchor.ToString()}");
             MemoryStream thumbnailImage = ToThumbnailImage(image, anchor);
 
@@ -163,9 +164,9 @@ namespace PhotoBattlerFunctionApp
         }
 
         // アニメ顔を認識して顔がある位置のアンカーを返す
-        private static AnchorLocation DetectFocusAnchor(TraceWriter log, MemoryStream normalizedImage)
+        private static AnchorLocation DetectFocusAnchor(TraceWriter log, MemoryStream normalizedImage, string functionAppDirectory)
         {
-            var haarCascade = new CascadeClassifier("lbpcascade_animeface.xml");
+            var haarCascade = new CascadeClassifier(Path.Combine(functionAppDirectory, "lbpcascade_animeface.xml"));
             normalizedImage.Position = 0;
             using (var faceMat = Mat.FromStream(normalizedImage.CopyToMemoryStream(), ImreadModes.AnyColor))
             {
