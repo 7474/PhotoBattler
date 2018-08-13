@@ -22,6 +22,7 @@ using PhotoBattlerFunctionApp.Logics;
 using PhotoBattlerFunctionApp.Models;
 using ImageResizer.ExtensionMethods;
 using ImageResizer;
+using OpenCvSharp;
 
 namespace PhotoBattlerFunctionApp
 {
@@ -62,7 +63,7 @@ namespace PhotoBattlerFunctionApp
             var user = User.FromRequest(users, req, Thread.CurrentPrincipal);
             var iuser = user as IUser;
 
-            // XXX ちゃんとした検証
+            // 既存のタグのみを受け付ける
             var existTags = await trainingApi.GetTagsAsync(projectId);
             tags = tags.Intersect(existTags.Select(x => x.Name)).ToList();
 
@@ -81,23 +82,14 @@ namespace PhotoBattlerFunctionApp
             var key = blockBlob.Name;
             log.Info($"pre upload. blobUri={url}");
 
+            // XXX この辺りの一連の手続きをいい感じに関数分割してフロー処理できると可用性と変更影響範囲が良くなりそう
+            // ただ、この程度の規模のサービスで1関数で同期的に処理する平易さ以上のメリットを得られるかは疑問
+
             // normalize image
-            var normalizedImage = new MemoryStream();
-            var thumbnailImage = new MemoryStream();
-            ImageBuilder.Current.Build(new ImageJob(new MemoryStream(image), normalizedImage, new Instructions()
-            {
-                Width = 1920,
-                Height = 1920,
-                Mode = FitMode.Max,
-                Scale = ScaleMode.DownscaleOnly
-            }));
-            ImageBuilder.Current.Build(new ImageJob(new MemoryStream(image), thumbnailImage, new Instructions()
-            {
-                Width = 256,
-                Height = 256,
-                Mode = FitMode.Crop,
-                Scale = ScaleMode.Both
-            }));
+            MemoryStream normalizedImage = NormalizeImage(image);
+            AnchorLocation anchor = DetectFocusAnchor(log, normalizedImage);
+            log.Info($"Anchor: {anchor.ToString()}");
+            MemoryStream thumbnailImage = ToThumbnailImage(image, anchor);
 
             // upload image
             normalizedImage.Position = 0;
@@ -106,7 +98,8 @@ namespace PhotoBattlerFunctionApp
             await blockBlobThumbnail.UploadFromStreamAsync(thumbnailImage);
             log.Info($"after upload.");
 
-            // queue image
+            // queue image for training
+            // 使用しているAPIの都合上、BLOBがアップロード後である必要がある
             TrainingImageLogic.AddImage(
                 imageUrls, queueItems, outImageUrlTable, log,
                 source, url, key, tags, user, modelName
@@ -114,7 +107,6 @@ namespace PhotoBattlerFunctionApp
             log.Info($"after queue image data.");
 
             // predict image
-            // XXX こっちもキューにした方がいいんちゃうか
             // https://docs.microsoft.com/ja-jp/azure/cognitive-services/custom-vision-service/csharp-tutorial
             var imageUrl = new ImageUrl()
             {
@@ -139,6 +131,90 @@ namespace PhotoBattlerFunctionApp
                 url,
                 result = predictResult
             });
+        }
+
+        private static MemoryStream NormalizeImage(byte[] image)
+        {
+            var normalizedImage = new MemoryStream();
+            ImageBuilder.Current.Build(new ImageJob(new MemoryStream(image), normalizedImage, new Instructions()
+            {
+                Width = 1920,
+                Height = 1920,
+                Mode = FitMode.Max,
+                Scale = ScaleMode.DownscaleOnly
+            }));
+            return normalizedImage;
+        }
+
+        private static MemoryStream ToThumbnailImage(byte[] image, AnchorLocation anchor)
+        {
+            var thumbnailImage = new MemoryStream();
+            ImageBuilder.Current.Build(new ImageJob(new MemoryStream(image), thumbnailImage, new Instructions()
+            {
+                Width = 256,
+                Height = 256,
+                Mode = FitMode.Crop,
+                Scale = ScaleMode.Both,
+                Anchor = anchor
+            }));
+            return thumbnailImage;
+        }
+
+        // アニメ顔を認識して顔がある位置のアンカーを返す
+        private static AnchorLocation DetectFocusAnchor(TraceWriter log, MemoryStream normalizedImage)
+        {
+            var haarCascade = new CascadeClassifier("lbpcascade_animeface.xml");
+            normalizedImage.Position = 0;
+            using (var faceMat = Mat.FromStream(normalizedImage.CopyToMemoryStream(), ImreadModes.AnyColor))
+            {
+                var faces = haarCascade.DetectMultiScale(faceMat);
+                if (faces.Length == 0)
+                {
+                    return AnchorLocation.MiddleCenter;
+                }
+                var face = faces.First();
+                log.Info(JsonConvert.SerializeObject(faces));
+
+                var focusX = (face.Left + face.Right) / 2;
+                var focusY = (face.Top + face.Bottom) / 2;
+                //TopLeft = 1,
+                //TopCenter = 2,
+                //TopRight = 4,
+                //MiddleLeft = 16,
+                //MiddleCenter = 32,
+                //MiddleRight = 64,
+                //BottomLeft = 256,
+                //BottomCenter = 512,
+                //BottomRight = 1024
+                // 概ねどのあたりに焦点があったか？　でアンカーを決める
+                int xFactor = 0;
+                if (faceMat.Width * 0.33 > focusX)
+                {
+                    xFactor = 0;
+                }
+                else if (faceMat.Width * 0.67 < focusX)
+                {
+                    xFactor = 2;
+                }
+                else
+                {
+                    xFactor = 1;
+                }
+                int yFactor = 0;
+                if (faceMat.Height * 0.33 > focusY)
+                {
+                    yFactor = 1;
+                }
+                else if (faceMat.Height * 0.67 < focusY)
+                {
+                    yFactor = 256;
+                }
+                else
+                {
+                    yFactor = 16;
+                }
+                return (AnchorLocation)(yFactor << xFactor);
+            }
         }
     }
 }

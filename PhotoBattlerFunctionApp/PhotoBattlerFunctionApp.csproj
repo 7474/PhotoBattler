@@ -8,6 +8,7 @@
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.CustomVision.Prediction" Version="0.10.0-preview" />    
     <PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.CustomVision.Training" Version="0.10.0-preview" />    
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.13" />    
+    <PackageReference Include="OpenCvSharp3-AnyCPU" Version="3.4.1.20180319" />    
     <PackageReference Include="TinyOAuth1" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
@@ -17,6 +18,9 @@
   <ItemGroup>
     <None Update="host.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lbpcascade_animeface.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="local.settings.sample.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
