@@ -164,6 +164,9 @@ namespace PhotoBattlerFunctionApp
         // アニメ顔を認識して顔がある位置のアンカーを返す
         private static AnchorLocation DetectFocusAnchor(TraceWriter log, MemoryStream normalizedImage, string functionAppDirectory)
         {
+            // XXX Functions実行環境向けのDLLパス試行設定
+            WindowsLibraryLoader.Instance.AdditionalPaths.Add(@"D:\home\site\wwwroot\dll\x64");
+            WindowsLibraryLoader.Instance.AdditionalPaths.Add(@"D:\home\site\wwwroot\dll\x86");
             log.Info("Start DetectFocusAnchor");
             var lbpCascade = new CascadeClassifier(Path.Combine(functionAppDirectory, "lbpcascade_animeface.xml"));
             log.Info("Loaded lbpcascade_animeface.xml");
