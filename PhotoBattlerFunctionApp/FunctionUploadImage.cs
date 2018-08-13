@@ -39,6 +39,8 @@ namespace PhotoBattlerFunctionApp
             TraceWriter log)
         {
             log.Info("C# HTTP trigger function processed a request.");
+            // 実行パスの確認用
+            log.Info(Environment.CurrentDirectory);
 
             // collect input
             dynamic data = await req.Content.ReadAsAsync<object>();
