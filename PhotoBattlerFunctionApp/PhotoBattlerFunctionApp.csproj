@@ -34,7 +34,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="mkdir $(TargetDir)ImageUpload&#xD;&#xA;copy $(ProjectDir)lbpcascade_animeface.xml $(TargetDir)ImageUpload\&#xD;&#xA;" />
-  </Target>
 </Project>
