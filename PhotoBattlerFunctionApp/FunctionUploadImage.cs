@@ -40,8 +40,6 @@ namespace PhotoBattlerFunctionApp
             Microsoft.Azure.WebJobs.ExecutionContext context)
         {
             log.Info("C# HTTP trigger function processed a request.");
-            // 実行パスの確認用
-            log.Info(Environment.CurrentDirectory);
 
             // collect input
             dynamic data = await req.Content.ReadAsAsync<object>();
@@ -166,11 +164,16 @@ namespace PhotoBattlerFunctionApp
         // アニメ顔を認識して顔がある位置のアンカーを返す
         private static AnchorLocation DetectFocusAnchor(TraceWriter log, MemoryStream normalizedImage, string functionAppDirectory)
         {
-            var haarCascade = new CascadeClassifier(Path.Combine(functionAppDirectory, "lbpcascade_animeface.xml"));
+            log.Info("Start DetectFocusAnchor");
+            var lbpCascade = new CascadeClassifier(Path.Combine(functionAppDirectory, "lbpcascade_animeface.xml"));
+            log.Info("Loaded lbpcascade_animeface.xml");
+
             normalizedImage.Position = 0;
             using (var faceMat = Mat.FromStream(normalizedImage.CopyToMemoryStream(), ImreadModes.AnyColor))
             {
-                var faces = haarCascade.DetectMultiScale(faceMat);
+                log.Info("Created Mat from stream");
+                var faces = lbpCascade.DetectMultiScale(faceMat);
+                log.Info("Called DetectMultiScale");
                 if (faces.Length == 0)
                 {
                     return AnchorLocation.MiddleCenter;
@@ -216,6 +219,7 @@ namespace PhotoBattlerFunctionApp
                 {
                     yFactor = 16;
                 }
+                log.Info("End DetectFocusAnchor");
                 return (AnchorLocation)(yFactor << xFactor);
             }
         }
