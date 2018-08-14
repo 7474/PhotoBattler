@@ -39,7 +39,6 @@ namespace PhotoBattlerFunctionApp
             var blobName = name;
             var info = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey == blobName).First();
 
-            // XXX 逆インデックスのTableを作成する
             var labels = info.Result.Predictions.ToDictionary(x => x.TagName, x => x.Probability);
             log.Info(JsonConvert.SerializeObject(labels));
 

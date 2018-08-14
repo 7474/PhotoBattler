@@ -50,6 +50,8 @@ namespace PhotoBattlerFunctionApp
                 Result = result
             };
             outBattleResultTable.Add(resultInfo);
+            // 検索の便宜上、対戦相手側のキーをパーティションとしたレコードを生成する
+            // XXX 効果検証（有効ではない可能性がある）
             var resultInfoR = new BattleResultInfo()
             {
                 PartitionKey = nameY,
@@ -99,7 +101,6 @@ namespace PhotoBattlerFunctionApp
             {
                 endName = infos.LastOrDefault()?.RowKey,
                 list = infos.ToList()
-                //list = infos.Select(x => ImageInfo.FromNameAndResult(x.RowKey, x)).ToList()
             });
         }
 

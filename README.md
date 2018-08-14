@@ -1,6 +1,6 @@
 # Photo Battler
 
-Photo Battler は [Azure Functionos](https://azure.microsoft.com/ja-jp/services/functions/) と
+Photo Battler は [Azure Functions](https://azure.microsoft.com/ja-jp/services/functions/) と
  [Azure Storage](https://azure.microsoft.com/ja-jp/services/storage/) のみでホスティングする
  Cognitive Services [Custom Vision](https://azure.microsoft.com/ja-jp/services/cognitive-services/custom-vision-service/) 
 のフロントエンドの予定でしたがCDNなども使い始めました。

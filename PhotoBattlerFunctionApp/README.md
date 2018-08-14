@@ -12,12 +12,14 @@ Photo Battlerを構成する Function App です。
 
 ## Snipets
 
-TODO Swagger.yml
-
-See https://github.com/7474/PhotoBattler/issues/50
+ここにない関数は原則としてGUI [PhotoBattlerSite](../PhotoBattlerSite) からの呼び出しです。
 
 
 ### QueueImageFromAmazon
+
+指定したASINの商品画像を教師データとする。
+
+本リクエストの結果得られたデータを元に教師データを充実させていく。
  
 ```json
 {

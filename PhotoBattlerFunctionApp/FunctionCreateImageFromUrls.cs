@@ -38,7 +38,8 @@ namespace PhotoBattlerFunctionApp
             var tagIds = existTags.Where(x => requestTags.Contains(x.Name)).Select(x => x.Id).ToList();
             nonExistTagNames.ToList().ForEach(tagName =>
             {
-                // FIXME 同時に同じタグ名を指定された複数のキューを処理すると、重複してタグ作成してしまう。
+                // XXX 同時に同じタグ名を指定された複数のキューを処理すると、重複してタグ作成してしまう。
+                // 現状、重複エラー後のリトライで処理
                 var tag = trainingApi.CreateTag(projectId, tagName);
                 tagIds.Add(tag.Id);
             });

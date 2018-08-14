@@ -11,6 +11,19 @@ namespace PhotoBattlerFunctionApp.Logics
 {
     class TrainingImageLogic
     {
+        /// <summary>
+        /// Custom Visionへの画像追加依頼キュー及び、その画像へのタグ指定を記録するためのテーブルへの追加を行う。
+        /// </summary>
+        /// <param name="imageUrls"></param>
+        /// <param name="queueItems"></param>
+        /// <param name="outImageUrlTable"></param>
+        /// <param name="log"></param>
+        /// <param name="source"></param>
+        /// <param name="url"></param>
+        /// <param name="key"></param>
+        /// <param name="tags"></param>
+        /// <param name="user"></param>
+        /// <param name="modelName"></param>
         public static void AddImage(
             IQueryable<CreateImageFromUrlsEntity> imageUrls,
             ICollector<CreateImageFromUrlsRequest> queueItems,

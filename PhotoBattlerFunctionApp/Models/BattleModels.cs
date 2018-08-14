@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace PhotoBattlerFunctionApp.Models
 {
+    // XXX BattleLogicと合わせて見直していく（ただし、HP,Attack,Mobilityの3基本構成要素は変更予定なし）
     public class BattleElement
     {
         public Guid Id { get; set; }
