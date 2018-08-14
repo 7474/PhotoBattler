@@ -90,6 +90,7 @@ namespace PhotoBattlerFunctionApp
                 var rowKey = asin + CommonHelper.MD5Hash(url);
                 var source = "Amazon";
 
+                // XXX TrainingImageLogic ‚ÉŠñ‚¹‚é
                 queueItems.Add(new CreateImageFromUrlsRequest()
                 {
                     Url = url,

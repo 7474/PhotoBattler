@@ -16,6 +16,9 @@ using PhotoBattlerFunctionApp.Extensions;
 
 namespace PhotoBattlerFunctionApp
 {
+    // 認証系はリファクタリングしない。
+    // （見直すならAppService組み込み機能の認証を使わず、Auth0などの統合サービスを使用して自前で認証する方が良さそう）
+    // （元々AppService組み込み機能の試行目的が強かったため良しとする）
     public static class FunctionAuth
     {
         [FunctionName("AuthPrincipal")]
