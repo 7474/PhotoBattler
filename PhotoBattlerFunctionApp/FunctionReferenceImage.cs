@@ -133,7 +133,7 @@ namespace PhotoBattlerFunctionApp
         {
             var blobName = name;
             var info = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey == blobName).First();
-            var unit = BattleLogic.AnalyzeParameter(info, tags.ToList());
+            var unit = BattleUnit.Build(info, tags.ToList());
             log.Info(JsonConvert.SerializeObject(unit));
 
             return req.CreateJsonResponse(HttpStatusCode.OK, unit);

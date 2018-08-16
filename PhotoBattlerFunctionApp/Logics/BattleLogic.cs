@@ -14,36 +14,6 @@ namespace PhotoBattlerFunctionApp.Logics
         // XXX 静的にこれはないなー
         static Random randomizer = new Random();
 
-        public static BattleUnit AnalyzeParameter(PredictedInfo image, IEnumerable<Tag> tags)
-        {
-            // TODO 重複排除とか色々再考する
-            // TODO HPが低すぎてバトルがすぐ終わるので数値の重みづけを再考する
-            var elements = image.Result.Predictions.Join(
-                tags,
-                x => x.TagName,
-                y => y.TagName,
-                (x, y) => new BattleElement()
-                {
-                    Name = x.TagName,
-                    HP = (int)Math.Floor(y.HP * x.Probability),
-                    Attack = (int)Math.Floor(y.Attack * x.Probability),
-                    Mobility = (int)Math.Floor(y.Mobility * x.Probability),
-                    Remark = $"{x.TagName}: {x.Probability}"
-                });
-
-            return new BattleUnit()
-            {
-                Id = Guid.NewGuid(),
-                PredictedInfoKey = image.RowKey,
-                Name = image.ModelName,
-                HP = elements.Sum(x => x.HP),
-                Attack = elements.Sum(x => x.Attack),
-                Mobility = elements.Sum(x => x.Mobility),
-                Attributes = elements.Select(x => x.Name).ToList(),
-                Remark = string.Join(",", elements.Select(x => x.Remark))
-            };
-        }
-
         public static BattleResult Battle(BattleUnit unitX, BattleUnit unitY)
         {
             // XXX イニシアティブメソッドに切り出す

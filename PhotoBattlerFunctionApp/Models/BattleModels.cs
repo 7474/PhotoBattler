@@ -34,6 +34,34 @@ namespace PhotoBattlerFunctionApp.Models
     {
         public string PredictedInfoKey { get; set; }
         public ICollection<string> Attributes { get; set; }
+
+        public static BattleUnit Build(PredictedInfo image, IEnumerable<Tag> tags)
+        {
+            var elements = image.Result.Predictions.Join(
+                tags,
+                x => x.TagName,
+                y => y.TagName,
+                (x, y) => new BattleElement()
+                {
+                    Name = x.TagName,
+                    HP = (int)Math.Floor(y.HP * x.Probability),
+                    Attack = (int)Math.Floor(y.Attack * x.Probability),
+                    Mobility = (int)Math.Floor(y.Mobility * x.Probability),
+                    Remark = $"{x.TagName}: {x.Probability}"
+                });
+
+            return new BattleUnit()
+            {
+                Id = Guid.NewGuid(),
+                PredictedInfoKey = image.RowKey,
+                Name = image.ModelName,
+                HP = elements.Sum(x => x.HP),
+                Attack = elements.Sum(x => x.Attack),
+                Mobility = elements.Sum(x => x.Mobility),
+                Attributes = elements.Select(x => x.Name).ToList(),
+                Remark = string.Join(",", elements.Select(x => x.Remark))
+            };
+        }
     }
     public class BattleResult
     {

@@ -28,8 +28,8 @@ namespace PhotoBattlerFunctionApp
             string nameY = data.nameY;
             var infoX = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey == nameX).First();
             var infoY = predictedInfo.Where(x => x.PartitionKey == "Upload" && x.RowKey == nameY).First();
-            var unitX = BattleLogic.AnalyzeParameter(infoX, tags.ToList());
-            var unitY = BattleLogic.AnalyzeParameter(infoY, tags.ToList());
+            var unitX = BattleUnit.Build(infoX, tags.ToList());
+            var unitY = BattleUnit.Build(infoY, tags.ToList());
             var imageX = ImageInfo.FromNameAndResult(nameX, infoX);
             var imageY = ImageInfo.FromNameAndResult(nameY, infoY);
             var invertedTicks = string.Format("{0:D19}", DateTime.MaxValue.Ticks - DateTime.UtcNow.Ticks);
