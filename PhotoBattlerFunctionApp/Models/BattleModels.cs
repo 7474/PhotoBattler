@@ -63,6 +63,26 @@ namespace PhotoBattlerFunctionApp.Models
             };
         }
     }
+    // TODO BattleResult をインタフェースに切り替える
+    public class Battle : BattleResult
+    {
+        public Battle(BattleUnit unitX, BattleUnit unitY)
+            : base()
+        {
+            this.UnitX = unitX;
+            this.UnitY = unitY;
+        }
+
+        public void Process()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsEnd()
+        {
+            return Actions.Any() && Actions.Last().IsEnd;
+        }
+    }
     public class BattleResult
     {
         public BattleUnit UnitX { get; set; }
@@ -76,6 +96,7 @@ namespace PhotoBattlerFunctionApp.Models
     {
         public BattleElement UnitX { get; set; }
         public BattleElement UnitY { get; set; }
+        // XXX Attackerではなくアクションの実行者を示す言葉にする
         public BattleElement Attacker { get; set; }
         public double HitRatio { get; set; }
         public int Damage { get; set; }
